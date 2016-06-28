@@ -5,10 +5,12 @@
 	<session-factory>
 		
 		<!-- Database connection settings -->
-		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
 		<property name="connection.url">jdbc:mysql://localhost:3306/test</property>
+		<property name="connection.useSSL">false</property>
 		<property name="connection.username">root</property>
 		<property name="connection.password">1234</property>
+		<property name="connection.serverTimezone">UTC</property>
 		
 		<!-- JDBC connection pool(use the built-in) -->
 		<property name="connection.pool_size">1</property>
@@ -17,8 +19,7 @@
 		<property name="hbm2ddl.auto">none</property>
 		
 		<!-- List of XML mappings -->
-		<mapping class="com.philip.fin.test.User"/>
-			
+		<mapping class="com.philip.fin.test.User"/>		
 	</session-factory>
 	
 </hibernate-configuration>

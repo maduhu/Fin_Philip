@@ -13,9 +13,10 @@ public class TestHibernate {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Configuration configuration = new Configuration();
-		configuration.configure("hibernate.cfg.xml");
+		configuration.configure();
 		
 		//configuration.addResource("User.hbm.xml");
+		//configuration.addAnnotatedClass(User.class);
 		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 		SessionFactory sf = configuration.buildSessionFactory(sr);
 		Session ss = sf.openSession();
@@ -33,12 +34,11 @@ public class TestHibernate {
 		user3.setPassword("Hello world from Nina!");
 		
 		//saving objects to session
-		/*ss.beginTransaction();
+		ss.beginTransaction();
 		ss.save(user1);
 		ss.save(user2);
 		ss.save(user3);
 		ss.getTransaction().commit();
-		*/
 		ss.close();
 	}
 
