@@ -2,6 +2,7 @@ package com.philip.fin.test;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.SessionFactoryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
@@ -18,7 +19,7 @@ public class TestHibernate {
 		//configuration.addResource("User.hbm.xml");
 		//configuration.addAnnotatedClass(User.class);
 		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-		SessionFactory sf = configuration.buildSessionFactory(sr);
+		SessionFactory sf = configuration.buildSessionFactory();
 		Session ss = sf.openSession();
 		
 		User user1 = new User();
