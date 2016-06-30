@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+ <hibernate-mapping>
+ 	<class name="com.philip.fin.accounting.Account" table="account" catalog="fin_philip">
+ 		<id name="account_id"  type="java.lang.Integer">
+ 			<column name="id" />
+ 			<generator class="increment" />
+ 		</id>
+ 		<property name="account_num" type="string">
+ 			<column name="account_num" length="10" not-null="true" />
+ 		</property>
+ 		<property name="account_name" type="string">
+ 			<column name="account_name" length="20" not-null="true" />
+ 		</property>
+ 		<property name="chinese_name" type="string">
+ 			<column name="chinese_name" length="30" not-null="true" />
+ 		</property>
+ 		<property name="description" type="string">
+ 			<column name="description" length="50" />
+ 		</property>
+ 		<property name="account_type" type="java.lang.Integer">
+ 			<column name="account_type" />
+ 		</property>
+ 		<property name="type_description" type="string">
+ 			<column name="type_description" />
+ 		</property>
+ 		<property name="create_time" type="java.util.Date">
+ 			<column name="create_time" />
+ 		</property>
+ 		<property name="update_time" type="java.util.Date">
+ 			<column name="update_time" />
+ 		</property>
+ 		<property name="user_account" type="java.lang.Integer">
+ 			<column name="user_account" />
+ 		</property>
+ 	</class>
+ </hibernate-mapping>

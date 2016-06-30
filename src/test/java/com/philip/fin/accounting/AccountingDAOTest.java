@@ -1,0 +1,99 @@
+package com.philip.fin.accounting;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import junit.framework.TestCase;
+
+public class AccountingDAOTest extends TestCase {
+	
+	private AccountingDAO dao = null;
+	
+	protected void setUp() throws Exception {
+		dao = new AccountingDAO();
+		dao.setup();
+	}
+	
+	protected void tearDown() throws Exception {
+		dao.clearup();
+	}
+	
+	public void testAccount() throws Exception {
+		int account_id = 0;
+		//Construt the account:
+		Account account = new Account();
+		account.setAccount_num("0000100001");
+		account.setAccount_name("user_01_saving");
+		account.setChinese_name("陈鹏的存款账户");
+		account.setDescription("robbin's account used as saving account");
+		account.setAccount_type(AccountingDAO.USER_DEPOSIT_ACCOUNT);
+		account.setType_description("used depos");
+		account.setCreate_time(new Date());
+		account.setUpdate_time(new Date());
+		account.setUser_account(1);
+		
+		//start to save it:
+		account_id = dao.createAccount(account);
+		
+		//retrive it from database:
+		account = null;
+		account = dao.getAccount(account_id);
+		
+		assertEquals(account.getAccount_num(),"0000100001");
+		assertEquals(account.getAccount_name(),"user_01_saving");
+		assertEquals(account.getChinese_name(),"陈鹏的存款账户");
+		assertEquals(account.getDescription(),"robbin's account used as saving account");
+		assertEquals(account.getAccount_type(), AccountingDAO.USER_DEPOSIT_ACCOUNT);
+		assertEquals(account.getType_description(), "used depos");
+		assertEquals(account.getUser_account(),1);
+		
+		//delete it from database:
+		dao.deleteAccount(account);
+	}
+	
+	public void testDocument() throws Exception {
+		//Construct the items:
+		HashSet items = new HashSet();
+		Doc_Item item1 = new Doc_Item();
+		item1.setItem_id(1);
+		item1.setAccount_id(2);
+		item1.setCredit_debit('c');
+		item1.setAmount(new BigDecimal(50));
+		item1.setCreate_time(new Date());
+		item1.setUpdate_time(new Date());
+		items.add(item1);
+		
+		Doc_Item item2 = new Doc_Item();
+		item2.setItem_id(2);
+		item2.setAccount_id(2);
+		item2.setCredit_debit('c');
+		item2.setAmount(new BigDecimal(50));
+		item2.setCreate_time(new Date());
+		item2.setUpdate_time(new Date());
+		items.add(item2);
+		
+		Doc_Item item3 = new Doc_Item();
+		item3.setItem_id(3);
+		item3.setAccount_id(1);
+		item3.setCredit_debit('d');
+		item3.setAmount(new BigDecimal(100));
+		item3.setCreate_time(new Date());
+		item3.setUpdate_time(new Date());
+		items.add(item3);
+		
+		//Construct the document:
+		Document document = new Document();
+		document.setBusiness_event(0);
+		document.setDescription("test to post the document");
+		document.setDoc_items(items);
+		document.setCreate_time(new Date());
+		document.setUpdate_time(new Date());
+		
+		dao.postDocument(document);
+		
+		assertEquals(new Integer(1),new Integer(1));
+	}
+}

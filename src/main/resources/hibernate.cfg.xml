@@ -6,7 +6,7 @@
 		
 		<!-- Database connection settings -->
 		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-		<property name="connection.url">jdbc:mysql://localhost:3306/test</property>
+		<property name="connection.url">jdbc:mysql://localhost:3306/fin_philip</property>
 		<property name="connection.useSSL">false</property>
 		<property name="connection.username">root</property>
 		<property name="connection.password">1234</property>
@@ -19,7 +19,8 @@
 		<property name="hbm2ddl.auto">none</property>
 		
 		<!-- List of XML mappings -->
-		<mapping class="com.philip.fin.test.User"/>		
+		<mapping resource="User.hbm.xml"/>
+		<mapping resource="Accounting.hbm.xml"/>		
 	</session-factory>
 	
 </hibernate-configuration>

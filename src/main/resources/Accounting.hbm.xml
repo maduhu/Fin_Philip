@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+ <hibernate-mapping>
+ 	<class name="com.philip.fin.accounting.Account" table="account" catalog="fin_philip">
+ 		<id name="account_id"  type="java.lang.Integer">
+ 			<column name="id" />
+ 			<generator class="increment" />
+ 		</id>
+ 		<property name="account_num" type="string">
+ 			<column name="account_num" length="10" not-null="true" />
+ 		</property>
+ 		<property name="account_name" type="string">
+ 			<column name="account_name" length="20" not-null="true" />
+ 		</property>
+ 		<property name="chinese_name" type="string">
+ 			<column name="chinese_name" length="30" not-null="true" />
+ 		</property>
+ 		<property name="description" type="string">
+ 			<column name="description" length="50" />
+ 		</property>
+ 		<property name="account_type" type="java.lang.Integer">
+ 			<column name="account_type" />
+ 		</property>
+ 		<property name="type_description" type="string">
+ 			<column name="type_description" />
+ 		</property>
+ 		<property name="create_time" type="java.util.Date">
+ 			<column name="create_time" />
+ 		</property>
+ 		<property name="update_time" type="java.util.Date">
+ 			<column name="update_time" />
+ 		</property>
+ 		<property name="user_account" type="java.lang.Integer">
+ 			<column name="user_account" />
+ 		</property>
+ 	</class>
+ 	<class name="com.philip.fin.accounting.Document" table="document" catalog="fin_philip">
+ 		<id name="id"  type="java.lang.Integer">
+ 			<column name="id" />
+ 			<generator class="increment" />
+ 		</id>
+ 		<property name="business_event" type="java.lang.Integer">
+ 			<column name="business_event" />
+ 		</property>
+ 		<property name="description" type="string">
+ 			<column name="description" length="30" />	
+ 		</property>
+ 		<property name="create_time" type="java.util.Date">
+ 			<column name="create_time" />
+ 		</property>
+ 		<property name="update_time" type="java.util.Date">
+ 			<column name="update_time" />
+ 		</property>
+ 		<set name="doc_items" cascade="all">
+ 			<key column="doc_id" />
+ 			<one-to-many class="com.philip.fin.accounting.Doc_Item" />
+ 		</set>
+ 	</class>
+ 	<class name="com.philip.fin.accounting.Doc_Item" table="doc_item" catalog="fin_philip">
+ 		<composite-id>
+ 			<key-property name="doc_id" column="doc_id" type="java.lang.Integer"/>
+ 			<key-property name="item_id" column="item_id" type="java.lang.Integer"/>
+ 		</composite-id>
+ 		<property name="credit_debit" type="char">
+ 			<column name="credit_debit" />
+ 		</property>
+ 		<property name="account_id" type="java.lang.Integer">
+ 			<column name="account_id" />
+ 		</property>
+ 		<property name="amount" type="java.math.BigDecimal">
+ 			<column name="amount" />
+ 		</property>
+ 		<property name="create_time" type="java.util.Date">
+ 			<column name="create_time" />
+ 		</property>
+ 		<property name="update_time" type="java.util.Date">
+ 			<column name="update_time" />
+ 		</property>
+ 	</class>
+ </hibernate-mapping>

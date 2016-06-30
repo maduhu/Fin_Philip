@@ -1,27 +1,20 @@
 package com.philip.fin.accounting;
 
 import java.util.Date;
+import java.util.Set;
 
 public class Document {
 	private int id;
 	
-	private String account_num;
-	
-	private String account_name;
-	
-	private String chinese_name;
+	private int business_event;
 	
 	private String description;
-	
-	private int account_type;
-	
-	private String type_description;
 	
 	private Date create_time;
 	
 	private Date update_time;
 	
-	private int user_account;
+	private Set doc_items;
 
 	public int getId() {
 		return id;
@@ -31,28 +24,12 @@ public class Document {
 		this.id = id;
 	}
 
-	public String getAccount_num() {
-		return account_num;
+	public int getBusiness_event() {
+		return business_event;
 	}
 
-	public void setAccount_num(String account_num) {
-		this.account_num = account_num;
-	}
-
-	public String getAccount_name() {
-		return account_name;
-	}
-
-	public void setAccount_name(String account_name) {
-		this.account_name = account_name;
-	}
-
-	public String getChinese_name() {
-		return chinese_name;
-	}
-
-	public void setChinese_name(String chinese_name) {
-		this.chinese_name = chinese_name;
+	public void setBusiness_event(int business_event) {
+		this.business_event = business_event;
 	}
 
 	public String getDescription() {
@@ -61,22 +38,6 @@ public class Document {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public int getAccount_type() {
-		return account_type;
-	}
-
-	public void setAccount_type(int account_type) {
-		this.account_type = account_type;
-	}
-
-	public String getType_description() {
-		return type_description;
-	}
-
-	public void setType_description(String type_description) {
-		this.type_description = type_description;
 	}
 
 	public Date getCreate_time() {
@@ -95,13 +56,11 @@ public class Document {
 		this.update_time = update_time;
 	}
 
-	public int getUser_account() {
-		return user_account;
+	public Set getDoc_items() {
+		return doc_items;
 	}
 
-	public void setUser_account(int user_account) {
-		this.user_account = user_account;
+	public void setDoc_items(Set doc_items) {
+		this.doc_items = doc_items;
 	}
-	
-	
 }

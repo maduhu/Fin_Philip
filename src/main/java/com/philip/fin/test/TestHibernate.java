@@ -41,6 +41,7 @@ public class TestHibernate {
 		ss.save(user3);
 		ss.getTransaction().commit();
 		ss.close();
+		sf.close();
 	}
 
 }

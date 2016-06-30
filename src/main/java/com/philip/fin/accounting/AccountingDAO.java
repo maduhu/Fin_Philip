@@ -1,6 +1,7 @@
 package com.philip.fin.accounting;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
@@ -13,6 +14,9 @@ import org.hibernate.service.ServiceRegistry;
 import com.philip.fin.test.LoginAction;
 
 public class AccountingDAO {
+	
+	public static final int USER_DEPOSIT_ACCOUNT = 6; 
+	
 	private static final Logger logger = Logger.getLogger(AccountingDAO.class);
 	
 	private Configuration configuration = null;
@@ -20,19 +24,32 @@ public class AccountingDAO {
 	private SessionFactory sf =null;
 	private Session ss = null;
 	
+	public AccountingDAO() {
+		logger.debug("Construct Accounting DAO");
+		logger.debug("set configuration..");
+		if(configuration == null)configuration=new Configuration(); 
+		configuration.configure();
+		
+		logger.debug("open the session..");
+		if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+		if(sf == null){sf = configuration.buildSessionFactory();ss = sf.openSession();}
+	}
+	
 	public boolean setup() {
 		logger.debug("start to setup the connection to database, first set return to false..");
 		boolean b = false;
 		
 		logger.debug("set configuration..");
-		configuration = new Configuration();
-		configuration.configure();
+		if(configuration == null){
+			configuration=new Configuration();
+			configuration.configure();
+		}
 		
 		logger.debug("open the session..");
-		sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+		if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 		sf = configuration.buildSessionFactory();
 		ss = sf.openSession();
-		
+				
 		logger.debug("successly setup the connection");
 		b = true;
 		return b;
@@ -42,36 +59,125 @@ public class AccountingDAO {
 		logger.debug("task finish,close the session");
 		boolean b = false;
 		
-		ss.close();
-		sf.close();
+		if(ss!=null&&ss.isConnected())ss.close();
+		if(sf!=null&&ss.isConnected())sf.close();
 		
 		logger.debug("the session successfully closed");
 		b = true;
 		return b;
 	}
 	
-	/*public boolean createAccount(Account account){
+	public int createAccount(Account account) throws Exception{
+		logger.debug("create one account;");
+		boolean b=false;
+		int account_id = 0;
 		
-	}*/
+		this.setup();
+		
+		ss.beginTransaction();
+		ss.save(account);
+		account_id = account.getAccount_id();
+		ss.getTransaction().commit();
+		
+		logger.debug("the account has been successfully created!");
+		this.clearup();
+		b = true;
+		
+		return account_id;
+	}
 	
-	public boolean postDocuments(ArrayList documents){
+	public Account getAccount(int account_id){
+		logger.debug("get account " + account_id + " from database;");
+		boolean b=false;
+		Account account = new Account();
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		account = (Account)ss.get(Account.class, account_id);
+		ss.getTransaction().commit();
+		
+		logger.debug("get account " + account_id + " successfully!");
+		this.clearup();
+		b = true;
+		
+		return account;
+	}
+	
+	public boolean deleteAccount(Account account){
+		logger.debug("delete account " + account.getAccount_name() + " from database;");
+		boolean b = false;
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		ss.delete(account);
+		ss.getTransaction().commit();
+		
+		logger.debug("the account " + account.getAccount_name() + " has been succesfully deleted!");
+		this.clearup();
+		b = true;
+		
+		return b;
+	}
+	
+	public boolean postDocument(Document document){
 		logger.debug("post the document to account book");
 		boolean b = false;
 		
 		this.setup();
 		
 		ss.beginTransaction();
-		Iterator i = documents.iterator();
+		ss.save(document);
+		Iterator i = document.getDoc_items().iterator();
+		HashSet items = new HashSet();
 		while(i.hasNext()){
-			Document doc = (Document)i.next();
+			Doc_Item item = (Doc_Item)i.next();
+			item.setDoc_id(document.getId());
 			
-			logger.debug("saveing document " + doc.getId() +": account_num: " + doc.getAccount_num() + ", description: " + doc.getDescription() +" to database" );
-			ss.save(doc);
+			items.add(item);
 		}
+		document.setDoc_items(items);
+		ss.save(document);
 		ss.getTransaction().commit();
 		
-		logger.debug("successfully post the documents");
+		logger.debug("successfully post the document");
 		b = true;
+		return b;
+	}
+	
+	public Document getDocument(int doc_id){
+		logger.debug("get document " + doc_id + " from database;");
+		boolean b=false;
+		Document document = new Document();
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		document = (Document)ss.get(Document.class, doc_id);
+		ss.getTransaction().commit();
+		
+		logger.debug("get document " + doc_id + " successfully!;");
+		this.clearup();
+		b = true;
+		
+		return document;
+	}
+	
+	public boolean deleteDocument(Document document){
+		logger.debug("delete document " + document.getDescription() + " from database;");
+		boolean b = false;
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		ss.delete(document);
+		ss.getTransaction().commit();
+		
+		logger.debug("successfully delete document " + document.getDescription() + " from database!");
+		this.clearup();
+		b = true;
+		
 		return b;
 	}
 }
