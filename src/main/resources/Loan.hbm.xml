@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+ <hibernate-mapping>
+ 	<class name="com.philip.fin.loan.Loan_Info" table="loan_Info" catalog="fin_philip">
+ 		<id name="id" type="java.lang.Integer" not-null="true">
+ 			<column name="id" />
+ 			<generator class="increment" />
+ 		</id>
+ 		<property name="apply_id" type="java.lang.Integer">
+ 			<column name="apply_id" />
+ 		</property>
+ 		<property name="loan_name" type="string">
+ 			<column name="loan_name" length="20" not-null="true" />
+ 		</property>
+ 		<property name="verify_status" type="char">
+ 			<column name="verify_status" length="1" />
+ 		</property>
+ 		<property name="loan_period" type="java.lang.Integer">
+ 			<column name="loan_period" />
+ 		</property>
+ 		<property name="amount" type="java.math.BigDecimal">
+ 			<column name="amount" />
+ 		</property>
+ 		<property name="annual_interest_loan" type="java.math.BigDecimal">
+ 			<column name="annual_interest_loan" />
+ 		</property>
+ 		<property name="annual_interest_invest" type="java.math.BigDecimal">
+ 			<column name="annual_interest_invest" />
+ 		</property>
+ 		<property name="raise_start_day" type="java.util.Date">
+ 			<column name="raise_start_day" />
+ 		</property>
+ 		<property name="raise_end_day" type="java.util.Date">
+ 			<column name="raise_end_day" />
+ 		</property>
+ 		<property name="raised_amount" type="java.math.BigDecimal">
+ 			<column name="raised_amount" />
+ 		</property>
+ 		<property name="loan_level" type="java.lang.Integer">
+ 			<column name="loan_level" />
+ 		</property>
+ 		<property name="loan_description" type="string">
+ 			<column name="loan_description" lenght="200"/>
+ 		</property>
+ 		<property name="minimum_raise_amount" type="java.math.BigDecimal">
+ 			<column name="minimum_raise_amount" />
+ 		</property>
+ 		<property name="left_amount" type="java.math.BigDecimal">
+ 			<column name="left_amount" />
+ 		</property>
+ 	</class>
+ </hibernate-mapping>

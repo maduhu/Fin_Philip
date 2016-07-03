@@ -30,11 +30,11 @@ public class AccountingDAOTest extends TestCase {
 		account.setAccount_name("user_01_saving");
 		account.setChinese_name("陈鹏的存款账户");
 		account.setDescription("robbin's account used as saving account");
-		account.setAccount_type(AccountingDAO.USER_DEPOSIT_ACCOUNT);
+		account.setAccount_type(AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
 		account.setType_description("used depos");
 		account.setCreate_time(new Date());
 		account.setUpdate_time(new Date());
-		account.setUser_account(1);
+		account.setUser_account(2);
 		
 		//start to save it:
 		account_id = dao.createAccount(account);
@@ -47,9 +47,20 @@ public class AccountingDAOTest extends TestCase {
 		assertEquals(account.getAccount_name(),"user_01_saving");
 		assertEquals(account.getChinese_name(),"陈鹏的存款账户");
 		assertEquals(account.getDescription(),"robbin's account used as saving account");
-		assertEquals(account.getAccount_type(), AccountingDAO.USER_DEPOSIT_ACCOUNT);
+		assertEquals(account.getAccount_type(), AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
 		assertEquals(account.getType_description(), "used depos");
-		assertEquals(account.getUser_account(),1);
+		assertEquals(account.getUser_account(),2);
+		
+		//retrive by user_id and account_type:
+		account = null;
+		account = dao.getAccount(2, AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
+		assertEquals(account.getAccount_num(),"0000100001");
+		assertEquals(account.getAccount_name(),"user_01_saving");
+		assertEquals(account.getChinese_name(),"陈鹏的存款账户");
+		assertEquals(account.getDescription(),"robbin's account used as saving account");
+		assertEquals(account.getAccount_type(), AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
+		assertEquals(account.getType_description(), "used depos");
+		assertEquals(account.getUser_account(),2);
 		
 		//delete it from database:
 		dao.deleteAccount(account);

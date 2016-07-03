@@ -3,16 +3,52 @@
  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
  
  <hibernate-mapping>
- 	<class name="com.philip.fin.test.User" table="User_table" catalog="test">
- 		<id name="userId" type="java.lang.Integer">
- 			<column name="userId" />
+ 	<class name="com.philip.fin.user.User" table="user" catalog="fin_philip">
+ 		<id name="id" type="java.lang.Integer">
+ 			<column name="id" />
  			<generator class="increment" />
  		</id>
- 		<property name="username" type="string">
- 			<column name="User_Name" length="15" not-null="true" unique="false" />
+ 		<property name="user_name" type="string">
+ 			<column name="user_name" length="15" not-null="true" />
+ 		</property>
+ 		<property name="chinese_name" type="string">
+ 			<column name="chinese_name" length="20" not-null="true" />
  		</property>
  		<property name="password" type="string">
- 			<column name="User_Message" length="100" not-null="true" unique="false" />
+ 			<column name="password" length="20" not-null="true" />
+ 		</property>
+ 		<property name="mobile" type="string">
+ 			<column name="mobile" length="11" />
+ 		</property>
+ 		<property name="mail_address" type="string">
+ 			<column name="mail_address" length="20" />
+ 		</property>
+ 		<property name="create_time" type="java.util.Date">
+ 			<column name="create_time" />
+ 		</property>
+ 		<property name="update_time" type="java.util.Date">
+ 			<column name="update_time" />
+ 		</property>
+ 		<property name="last_login" type="java.util.Date">
+ 			<column name="last_login" />
+ 		</property>
+ 		<property name="last_operation" type="java.lang.Integer">
+ 			<column name="last_operation" />
+ 		</property>
+ 		<property name="investment_account" type="java.lang.Integer">
+ 			<column name="investment_account" />
+ 		</property>
+ 		<property name="saving_account" type="java.lang.Integer">
+ 			<column name="saving_account" />
+ 		</property>
+ 		<property name="loan_account" type="java.lang.Integer">
+ 			<column name="loan_account" />
+ 		</property>
+ 		<property name="alive_flag" type="boolean">
+ 			<column name="alive_flag" />
+ 		</property>
+ 		<property name="delete_time" type="java.util.Date">
+ 			<column name="delete_time" />
  		</property>
  	</class>
  </hibernate-mapping>

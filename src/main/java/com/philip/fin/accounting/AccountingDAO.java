@@ -3,6 +3,7 @@ package com.philip.fin.accounting;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -14,8 +15,6 @@ import org.hibernate.service.ServiceRegistry;
 import com.philip.fin.test.LoginAction;
 
 public class AccountingDAO {
-	
-	public static final int USER_DEPOSIT_ACCOUNT = 6; 
 	
 	private static final Logger logger = Logger.getLogger(AccountingDAO.class);
 	
@@ -100,6 +99,25 @@ public class AccountingDAO {
 		logger.debug("get account " + account_id + " successfully!");
 		this.clearup();
 		b = true;
+		
+		return account;
+	}
+	
+	public Account getAccount(int user_id, int type) {
+		logger.debug("get account by user_id:" + user_id +" & type:" + type);
+		Account account = new Account();
+		List result;
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		result = ss.createQuery("from com.philip.fin.accounting.Account where user_account=" + user_id + " and account_type=" + type).list();
+		Iterator i = result.iterator();
+		if(i.hasNext())account = (Account)i.next();
+		ss.getTransaction().commit();
+		
+		logger.debug("get account for the condition");
+		this.clearup();
 		
 		return account;
 	}
