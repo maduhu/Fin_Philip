@@ -121,9 +121,10 @@ public class AccountingDAO {
 		return b;
 	}
 	
-	public boolean postDocument(Document document){
+	public int postDocument(Document document){
 		logger.debug("post the document to account book");
-		boolean b = false;
+		//boolean b = false;
+		int doc_id;
 		
 		this.setup();
 		
@@ -139,11 +140,11 @@ public class AccountingDAO {
 		}
 		document.setDoc_items(items);
 		ss.save(document);
+		doc_id = document.getId();
 		ss.getTransaction().commit();
 		
 		logger.debug("successfully post the document");
-		b = true;
-		return b;
+		return doc_id;
 	}
 	
 	public Document getDocument(int doc_id){

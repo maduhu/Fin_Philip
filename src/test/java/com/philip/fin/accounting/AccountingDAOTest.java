@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -55,6 +56,8 @@ public class AccountingDAOTest extends TestCase {
 	}
 	
 	public void testDocument() throws Exception {
+		//1¡¢test add document:
+		int doc_id;
 		//Construct the items:
 		HashSet items = new HashSet();
 		Doc_Item item1 = new Doc_Item();
@@ -92,8 +95,38 @@ public class AccountingDAOTest extends TestCase {
 		document.setCreate_time(new Date());
 		document.setUpdate_time(new Date());
 		
-		dao.postDocument(document);
+		doc_id = dao.postDocument(document);
 		
 		assertEquals(new Integer(1),new Integer(1));
+		
+		//2¡¢test get document:
+		Document doc = new Document();
+		doc = dao.getDocument(doc_id);
+		
+		assertEquals(doc.getBusiness_event(),0);
+		assertEquals(doc.getDescription(),"test to post the document");
+		assertEquals(doc.getDoc_items().size(),3);
+		
+		Iterator i = doc.getDoc_items().iterator();
+		Doc_Item ditem1=(Doc_Item)(i.next());
+		assertEquals(ditem1.getItem_id(),1);
+		assertEquals(ditem1.getAccount_id(),2);
+		assertEquals(ditem1.getCredit_debit(),'c');
+		assertEquals(ditem1.getAmount(),new BigDecimal(50).setScale(2));
+		
+		Doc_Item ditem2=(Doc_Item)(i.next());
+		assertEquals(ditem2.getItem_id(),2);
+		assertEquals(ditem2.getAccount_id(),2);
+		assertEquals(ditem2.getCredit_debit(),'c');
+		assertEquals(ditem2.getAmount(),new BigDecimal(50).setScale(2));
+		
+		Doc_Item ditem3=(Doc_Item)(i.next());
+		assertEquals(ditem3.getItem_id(),3);
+		assertEquals(ditem3.getAccount_id(),1);
+		assertEquals(ditem3.getCredit_debit(),'d');
+		assertEquals(ditem3.getAmount(),new BigDecimal(100).setScale(2));
+		
+		//test delete:
+		dao.deleteDocument(doc);
 	}
 }
