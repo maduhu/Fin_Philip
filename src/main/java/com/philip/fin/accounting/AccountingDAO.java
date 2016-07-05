@@ -76,6 +76,8 @@ public class AccountingDAO {
 		ss.beginTransaction();
 		ss.save(account);
 		account_id = account.getAccount_id();
+		account.getAccount_bal().setId(account_id);
+		ss.save(account);
 		ss.getTransaction().commit();
 		
 		logger.debug("the account has been successfully created!");
@@ -113,7 +115,13 @@ public class AccountingDAO {
 		ss.beginTransaction();
 		result = ss.createQuery("from com.philip.fin.accounting.Account where user_account=" + user_id + " and account_type=" + type).list();
 		Iterator i = result.iterator();
-		if(i.hasNext())account = (Account)i.next();
+		if(i.hasNext()){
+			account = (Account)i.next();
+			result = ss.createQuery("from com.philip.fin.accounting.AccountBalance where id=" + account.getAccount_id()).list();
+			Iterator i1 = result.iterator();
+			if(i1.hasNext())account.setAccount_bal((AccountBalance)i1.next());
+		}
+		
 		ss.getTransaction().commit();
 		
 		logger.debug("get account for the condition");

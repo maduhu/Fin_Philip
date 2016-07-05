@@ -1,8 +1,9 @@
 package com.philip.fin.accounting;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Account {
+public class Account implements Serializable{
 	private int account_id;
 	
 	private String account_num;
@@ -22,6 +23,30 @@ public class Account {
 	private Date update_time;
 	
 	private int user_account;
+	
+	private char D_C;
+
+	private AccountBalance account_bal;
+	
+	public Account() {
+		account_bal = new AccountBalance();
+	}
+	
+	public char getD_C() {
+		return D_C;
+	}
+
+	public void setD_C(char d_C) {
+		D_C = d_C;
+	}
+	
+	public AccountBalance getAccount_bal() {
+		return account_bal;
+	}
+
+	public void setAccount_bal(AccountBalance account_bal) {
+		this.account_bal = account_bal;
+	}
 
 	public int getAccount_id() {
 		return account_id;

@@ -6,16 +6,15 @@ import com.philip.fin.accounting.AccountingManager;
 
 import junit.framework.TestCase;
 
-public class UserDAOTest extends TestCase {
-	private UserDAO dao = null;
+public class UserManagerTest extends TestCase {
+	private UserManager manager = null;
 	
 	protected void setUp() throws Exception {
-		dao = new UserDAO();
-		dao.setup();
+		manager = new UserManager();
 	}
 	
 	protected void tearDown() throws Exception {
-		dao.clearup();
+		manager = null;
 	}
 	
 	public void testUser() throws Exception {
@@ -35,20 +34,20 @@ public class UserDAOTest extends TestCase {
 		user.setAlive_flag(true);
 		user.setDelete_time(null);
 		
-		user_id = dao.createUser(user);
+		user_id = manager.createUser(user);
 		
 		//get it from database:
-		User tUser = dao.getUser(user_id);
+		User tUser = manager.getUser(user_id);
 		
 		assertEquals(tUser.getUser_name(),"chen peng");
 		assertEquals(tUser.getChinese_name(),"³ÂÅô");
-		assertEquals(tUser.getPassword(),"test123");
+		assertEquals(tUser.getPassword(),PasswordUtil.encrypt("test123", tUser.getPassword_salt()));
 		assertEquals(tUser.getMail_address(),"robbinpeng@163.com");
 		assertEquals(tUser.getMobile(),"13561073279");
 		assertEquals(tUser.getLast_operation(),AccountingManager.BIZ_OPER_NO_OPERATION);
 		assertEquals(tUser.isAlive_flag(),true);
 		
 		//delete it from database:
-		dao.deleteUser(tUser);
+		manager.deleteUser(tUser);
 	}
 }

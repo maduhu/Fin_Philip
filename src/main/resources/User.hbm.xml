@@ -15,7 +15,10 @@
  			<column name="chinese_name" length="20" not-null="true" />
  		</property>
  		<property name="password" type="string">
- 			<column name="password" length="20" not-null="true" />
+ 			<column name="password" length="50" />
+ 		</property>
+ 		<property name="password_salt" type="string">
+ 			<column name="password_salt" length="30" />
  		</property>
  		<property name="mobile" type="string">
  			<column name="mobile" length="11" />
@@ -34,15 +37,6 @@
  		</property>
  		<property name="last_operation" type="java.lang.Integer">
  			<column name="last_operation" />
- 		</property>
- 		<property name="investment_account" type="java.lang.Integer">
- 			<column name="investment_account" />
- 		</property>
- 		<property name="saving_account" type="java.lang.Integer">
- 			<column name="saving_account" />
- 		</property>
- 		<property name="loan_account" type="java.lang.Integer">
- 			<column name="loan_account" />
  		</property>
  		<property name="alive_flag" type="boolean">
  			<column name="alive_flag" />

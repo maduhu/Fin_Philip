@@ -13,8 +13,8 @@ public class AccountingDAOTest extends TestCase {
 	
 	private AccountingDAO dao = null;
 	
-	protected void setUp() throws Exception {
-		dao = new AccountingDAO();
+	protected void setUp() throws Exception{
+		dao = new AccountingDAO();	
 		dao.setup();
 	}
 	
@@ -36,6 +36,14 @@ public class AccountingDAOTest extends TestCase {
 		account.setUpdate_time(new Date());
 		account.setUser_account(2);
 		
+		AccountBalance bal = new AccountBalance();
+		bal.setAccount_num("0000100001");
+		bal.setAccount_name("user_01_saving");
+		bal.setCreate_time(new Date());
+		bal.setUpdate_time(new Date());
+		bal.setAccount(account);
+		account.setAccount_bal(bal);
+		
 		//start to save it:
 		account_id = dao.createAccount(account);
 		
@@ -51,6 +59,11 @@ public class AccountingDAOTest extends TestCase {
 		assertEquals(account.getType_description(), "used depos");
 		assertEquals(account.getUser_account(),2);
 		
+		assertNotNull(account.getAccount_bal());
+		assertEquals(account.getAccount_bal().getId(),account_id);
+		assertEquals(account.getAccount_bal().getAccount_num(),"0000100001");
+		assertEquals(account.getAccount_bal().getAccount_name(),"user_01_saving");
+		
 		//retrive by user_id and account_type:
 		account = null;
 		account = dao.getAccount(2, AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
@@ -61,6 +74,11 @@ public class AccountingDAOTest extends TestCase {
 		assertEquals(account.getAccount_type(), AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
 		assertEquals(account.getType_description(), "used depos");
 		assertEquals(account.getUser_account(),2);
+		
+		assertNotNull(account.getAccount_bal());
+		assertEquals(account.getAccount_bal().getId(),account_id);
+		assertEquals(account.getAccount_bal().getAccount_num(),"0000100001");
+		assertEquals(account.getAccount_bal().getAccount_name(),"user_01_saving");
 		
 		//delete it from database:
 		dao.deleteAccount(account);

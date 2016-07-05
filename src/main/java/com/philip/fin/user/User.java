@@ -13,11 +13,15 @@ public class User {
 	private Date update_time;
 	private Date last_login;
 	private int last_operation;
-	private int investment_account;
-	private int saving_account;
-	private int loan_account;
 	private boolean alive_flag;
 	private Date delete_time;
+	private String password_salt;
+	public String getPassword_salt() {
+		return password_salt;
+	}
+	public void setPassword_salt(String password_salt) {
+		this.password_salt = password_salt;
+	}
 	public int getId() {
 		return id;
 	}
@@ -77,24 +81,6 @@ public class User {
 	}
 	public void setLast_operation(int last_operation) {
 		this.last_operation = last_operation;
-	}
-	public int getInvestment_account() {
-		return investment_account;
-	}
-	public void setInvestment_account(int investment_account) {
-		this.investment_account = investment_account;
-	}
-	public int getSaving_account() {
-		return saving_account;
-	}
-	public void setSaving_account(int saving_account) {
-		this.saving_account = saving_account;
-	}
-	public int getLoan_account() {
-		return loan_account;
-	}
-	public void setLoan_account(int loan_account) {
-		this.loan_account = loan_account;
 	}
 	public boolean isAlive_flag() {
 		return alive_flag;
