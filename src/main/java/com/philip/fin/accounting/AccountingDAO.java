@@ -1,6 +1,9 @@
 package com.philip.fin.accounting;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -205,6 +208,108 @@ public class AccountingDAO {
 		this.clearup();
 		b = true;
 		
+		return b;
+	}
+	
+	public boolean updateAccounts(Document document) throws AccountException{
+		boolean b = false;
+		BigDecimal bal = new BigDecimal(0);
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		Iterator i = document.getDoc_items().iterator();
+		while(i.hasNext()){
+			Doc_Item item = (Doc_Item)i.next();
+			Account account = null;
+			
+			//1、find the account:
+			account = (Account)ss.get(Account.class, item.getAccount_id());
+			//2、plus or minus from account:
+			//3、if <0, throw Exception:
+			bal = bal.add(account.getAccount_bal().getAccount_bal());
+			if(account.getD_C()=='d'){
+				if(item.getCredit_debit()=='d'){
+					bal = bal.add(item.getAmount());
+				} else if (item.getCredit_debit()=='c') {
+					bal = bal.subtract(item.getAmount());
+					if(bal.intValue() < 0)throw new AccountException("0001","the account balance is below zero which is forbiden!");
+				}
+			} else if (account.getD_C()=='c') {
+				if(item.getCredit_debit()=='c'){
+					bal = bal.add(item.getAmount());
+				} else if (item.getCredit_debit()=='d'){
+					bal = bal.subtract(item.getAmount());
+					if(bal.intValue() < 0)throw new AccountException("0001","the account balance is below zero which is forbiden!");
+				}
+			}
+			
+			//4、update the value to database:
+			AccountBalance balance = account.getAccount_bal();
+			balance.setAccount_bal(bal);
+			balance.setUpdate_time(new Date());
+			ss.save(balance);
+		}
+		//5、commit:
+		ss.getTransaction().commit();
+		
+		this.clearup();
+		
+		b = true;
+		return b;
+	}
+
+	public boolean archiveAccounts(Date date){
+		boolean b = false;
+		List<AccountBalance[]> result=null;
+		Iterator i = null;
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		result = ss.createQuery("from com.philip.fin.accounting.AccountBalance").list();
+		i = result.iterator();
+		while(i.hasNext()){
+			AccountBalance bal = (AccountBalance)i.next();
+			AccountBalHistory history = new AccountBalHistory();
+			history.setId(bal.getId());
+			history.setAccount_num(bal.getAccount_num());
+			history.setDate(date);
+			history.setAccount_name(bal.getAccount_name());
+			history.setAccount_bal(bal.getAccount_bal());
+			
+			ss.save(history);
+		}
+		
+		ss.getTransaction().commit();
+		
+		this.clearup();
+		
+		b = true;
+		return b;
+	}
+	
+	public boolean isHistoryBalance(Date date){
+		boolean b = false;
+		BigDecimal debit = new BigDecimal(0);
+		BigDecimal credit = new BigDecimal(0);
+		List<Object[]> result=null;
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		result = ss.createQuery("select acc.id, acc.account_num, acc.D_C, from com.philip.fin.accounting.AccountBalHistory as his join com.philip.fin.accounting.Accout as acc where date=" + date + " and his.id = acc.id").list();
+		for(Object[] object : result){
+			AccountBalance bal = new AccountBalance();
+			
+			
+		}
+		
+		ss.getTransaction().commit();
+		
+		this.clearup();
+		
+		b = true;
 		return b;
 	}
 }

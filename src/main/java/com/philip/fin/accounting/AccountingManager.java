@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
 public class AccountingManager {
 	public static final int BIZ_OPER_NO_OPERATION = 0;
 	public static final int BIZ_OPER_CREATE_USER_ACCOUNT = 1;
@@ -25,6 +27,8 @@ public class AccountingManager {
 	
 	private AccountingDAO accountingDAO = null;
 	
+	private static final Logger logger = Logger.getLogger(AccountingManager.class);
+	
 	public AccountingManager() {
 		accountingDAO = new AccountingDAO();
 	}
@@ -43,6 +47,10 @@ public class AccountingManager {
 		account1.setCreate_time(new Date());
 		account1.setUpdate_time(new Date());
 		account1.setUser_account(user_id);
+		//account1.getAccount_bal().setAccount_num(account_num);
+		account1.getAccount_bal().setAccount_name("User " + user_id + "'s deposit account");
+		account1.getAccount_bal().setCreate_time(new Date());
+		account1.getAccount_bal().setUpdate_time(new Date());
 		accountingDAO.createAccount(account1);
 		
 		//create invest account:
@@ -56,6 +64,10 @@ public class AccountingManager {
 		account2.setCreate_time(new Date());
 		account2.setUpdate_time(new Date());
 		account2.setUser_account(user_id);
+		//account2.getAccount_bal().setAccount_num(account_num);
+		account2.getAccount_bal().setAccount_name("User " + user_id + "'s invest account");
+		account2.getAccount_bal().setCreate_time(new Date());
+		account2.getAccount_bal().setUpdate_time(new Date());
 		accountingDAO.createAccount(account2);
 		
 		//create loan account:
@@ -69,6 +81,10 @@ public class AccountingManager {
 		account3.setCreate_time(new Date());
 		account3.setUpdate_time(new Date());
 		account3.setUser_account(user_id);
+		//account3.getAccount_bal().setAccount_num(account_num);
+		account3.getAccount_bal().setAccount_name("User " + user_id + "'s loan account");
+		account3.getAccount_bal().setCreate_time(new Date());
+		account3.getAccount_bal().setUpdate_time(new Date());
 		accountingDAO.createAccount(account3);
 		
 		//create account payable account:
@@ -82,6 +98,10 @@ public class AccountingManager {
 		account4.setCreate_time(new Date());
 		account4.setUpdate_time(new Date());
 		account4.setUser_account(user_id);
+		//account4.getAccount_bal().setAccount_num(account_num);
+		account4.getAccount_bal().setAccount_name("User " + user_id + "'s account payable account");
+		account4.getAccount_bal().setCreate_time(new Date());
+		account4.getAccount_bal().setUpdate_time(new Date());
 		accountingDAO.createAccount(account4);
 		
 		b = true;
@@ -123,10 +143,19 @@ public class AccountingManager {
 		items.add(item2);
 		
 		document.setDoc_items(items);
-		accountingDAO.postDocument(document);
 		
-		b = true;
-		return b;
+		//1,update balance; 2,post document
+		try {
+			accountingDAO.updateAccounts(document);
+			accountingDAO.postDocument(document);
+			
+			b = true;
+		} catch (AccountException e) {
+			e.printStackTrace();
+			logger.error(e);
+		} finally {
+			return b;
+		}
 	}
 	
 	public boolean drawMoney (int user_id, BigDecimal amount) {
@@ -164,9 +193,17 @@ public class AccountingManager {
 		items.add(item2);
 				
 		document.setDoc_items(items);
-		accountingDAO.postDocument(document);
 		
-		b = true;
+		try {
+			accountingDAO.updateAccounts(document);
+			accountingDAO.postDocument(document);
+			
+			b = true;
+		} catch (AccountException e) {
+			e.printStackTrace();
+			logger.error(e);
+		} 
+	
 		return b;
 	}
 	
@@ -206,9 +243,17 @@ public class AccountingManager {
 		items.add(item2);
 				
 		document.setDoc_items(items);
-		accountingDAO.postDocument(document);
 		
-		b = true;
+		try {
+			accountingDAO.updateAccounts(document);
+			accountingDAO.postDocument(document);
+
+			b = true;
+		} catch (AccountException e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+			
 		return b;
 	}
 	
@@ -248,9 +293,17 @@ public class AccountingManager {
 		items.add(item2);
 				
 		document.setDoc_items(items);
-		accountingDAO.postDocument(document);
 		
-		b = true;
+		try {
+			accountingDAO.updateAccounts(document);
+			accountingDAO.postDocument(document);
+			
+			b = true;
+		} catch (AccountException e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+
 		return b;
 	}
 	
