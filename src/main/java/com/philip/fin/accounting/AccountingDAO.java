@@ -2,7 +2,11 @@ package com.philip.fin.accounting;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,6 +29,25 @@ public class AccountingDAO {
 	private ServiceRegistry sr = null;
 	private SessionFactory sf =null;
 	private Session ss = null;
+	
+	/*public static void main(String[] arg) throws ParseException{
+		Date date = new SimpleDateFormat("yyyy-mm-dd").parse("2016-06-30");
+		Calendar cal = Calendar.getInstance();
+		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+		//date = cal.getTime();
+		//System.out.println(sdf.format(date));
+		//cal.add(Calendar.DATE, -1);
+		//date = cal.getTime();
+		//System.out.println(cal.get(Calendar.YEAR));
+		//System.out.println(cal.get(Calendar.MONTH)+1);
+		//System.out.println(cal.get(Calendar.DAY_OF_MONTH));
+		
+		AccountingDAO dao = new AccountingDAO();
+		
+		CheckInfo b = dao.checkAllAccountsBalance();
+		System.out.println(b.isBalance());
+		System.out.println(b.getAccount_num());
+	}*/
 	
 	public AccountingDAO() {
 		logger.debug("Construct Accounting DAO");
@@ -73,6 +96,7 @@ public class AccountingDAO {
 		logger.debug("create one account;");
 		boolean b=false;
 		int account_id = 0;
+		String acc_num = null;
 		
 		this.setup();
 		
@@ -80,6 +104,8 @@ public class AccountingDAO {
 		ss.save(account);
 		account_id = account.getAccount_id();
 		account.getAccount_bal().setId(account_id);
+		acc_num = String.format("%03d", account.getAccount_type()) + String.format("%07d", account_id);
+		account.setAccount_num(acc_num);
 		ss.save(account);
 		ss.getTransaction().commit();
 		
@@ -298,18 +324,167 @@ public class AccountingDAO {
 		this.setup();
 		
 		ss.beginTransaction();
-		result = ss.createQuery("select acc.id, acc.account_num, acc.D_C, from com.philip.fin.accounting.AccountBalHistory as his join com.philip.fin.accounting.Accout as acc where date=" + date + " and his.id = acc.id").list();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+		result = ss.createSQLQuery("select acc.id, acc.account_num, acc.D_C, his.account_bal from account_balance_history his inner join account acc on his.id = acc.id where date_format(his.date,'%Y-%M-%D') = date_format('" + sdf.format(date) +"','%Y-%M-%D')").list();
 		for(Object[] object : result){
-			AccountBalance bal = new AccountBalance();
+			String account_num = (String)object[1];
+			java.lang.Character D_C = (java.lang.Character)object[2];
+			BigDecimal bal = (BigDecimal)object[3];
 			
-			
+			if(D_C =='d'){
+				debit = debit.add(bal);
+			} else if(D_C =='c') {
+				credit = credit.add(bal);
+			}
+		}
+		
+		if(debit.equals(credit)){
+			b = true;
+		} else {
+			b = false;
 		}
 		
 		ss.getTransaction().commit();
 		
 		this.clearup();
 		
-		b = true;
 		return b;
+	}
+	
+	public boolean isCurrentBalance(){
+		boolean b = false;
+		BigDecimal debit = new BigDecimal(0);
+		BigDecimal credit = new BigDecimal(0);
+		List<Object[]> result=null;
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		result = ss.createSQLQuery("select bal.account_bal, acc.D_C from account_balance bal inner join account acc on bal.id = acc.id").list();
+		for(Object[] object : result){
+			BigDecimal bal = (BigDecimal)object[0];
+			java.lang.Character D_C = (java.lang.Character)object[1];
+			
+			if(D_C =='d'){
+				debit = debit.add(bal);
+			} else if(D_C =='c') {
+				credit = credit.add(bal);
+			}
+		}
+		
+		if(debit.equals(credit)){
+			b = true;
+		} else {
+			b = false;
+		}
+		
+		ss.getTransaction().commit();
+		
+		this.clearup();
+		
+		return b;
+	}
+	
+	public boolean isDocumentsBalance(Date date){
+		boolean b = false;
+		BigDecimal debit = new BigDecimal(0);
+		BigDecimal credit = new BigDecimal(0);
+		List<Object[]> result=null;
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+		result = ss.createQuery("from com.philip.fin.accounting.Doc_Item where date_format(update_time,'%Y-%M-%D') = date_format('" + sdf.format(date) +"','%Y-%M-%D')").list();
+		Iterator i = result.iterator();
+		while(i.hasNext()){
+			Doc_Item item = (Doc_Item)i.next();
+			
+			if(item.getCredit_debit() == 'd'){
+				debit = debit.add(item.getAmount());
+			} else if (item.getCredit_debit() == 'c'){
+				credit = credit.add(item.getAmount());
+			}
+		}
+		
+		if(debit.equals(credit)){
+			b = true;
+		} else {
+			b = false;
+		}
+		
+		ss.getTransaction().commit();
+		
+		this.clearup();
+		
+		return b;
+	}
+	
+	public CheckInfo checkAllAccountsBalance(){
+		CheckInfo check = new CheckInfo();
+		check.setBalance(true);
+		List<Object[]> result=null;
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		//Date yestoday = cal.getTime();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+		String yestoday = "" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH)+1) + "-" +(cal.get(Calendar.DAY_OF_MONTH));
+		
+		this.setup();
+		
+		ss.beginTransaction();
+		
+		//1、Get all accounts:
+		result = ss.createQuery("from com.philip.fin.accounting.AccountBalance").list();
+		Iterator i = result.iterator();
+		while(i.hasNext()){
+			//2、Get start、end、middle amount number:
+			AccountBalance bal = (AccountBalance)i.next();
+			Account account = new Account();
+			AccountBalHistory history = new AccountBalHistory();
+			
+			account = (Account)ss.get(Account.class, bal.getId());
+			
+			result = ss.createQuery("from com.philip.fin.accounting.AccountBalHistory where id=" + bal.getId() + " and date_format(date,'%Y-%M-%D') = date_format('" + yestoday + "','%Y-%M-%D')").list();
+			Iterator i1 = result.iterator();
+			if(i1.hasNext()){
+				history = (AccountBalHistory)i1.next();
+			}
+			BigDecimal amount = history.getAccount_bal();
+			
+			result = ss.createQuery("from com.philip.fin.accounting.Doc_Item where account_id=" + bal.getId()).list();
+			Iterator i2 = result.iterator();
+			
+			//3、Check whether the account is balance, if not break and return false;
+			while(i2.hasNext()){
+				Doc_Item item = (Doc_Item)i2.next();
+				if(account.getD_C() == 'd'){
+					if(item.getCredit_debit()=='d'){
+						amount = amount.add(item.getAmount());
+					} else if (item.getCredit_debit() == 'c'){
+						amount = amount.subtract(item.getAmount());
+					}
+				} else if (account.getD_C() == 'c'){
+					if(item.getCredit_debit()=='c'){
+						amount = amount.add(item.getAmount());
+					} else if (item.getCredit_debit() == 'd'){
+						amount = amount.subtract(item.getAmount());
+					}
+				}
+			}
+			
+			if(!amount.equals(account.getAccount_bal())){
+				check.setBalance(false);
+				check.setAccount_id(account.getAccount_id());
+				check.setAccount_num(account.getAccount_num());
+				break;
+			}
+		}		
+		
+		ss.getTransaction().commit();
+		
+		this.clearup();
+		
+		return check;
 	}
 }
