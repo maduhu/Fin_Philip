@@ -19,4 +19,8 @@ public class AccountException extends Exception {
 		this.retCd = retCd;
 		this.msgDes = msgDes;
 	}
+	
+	public AccountException(Exception e){
+		super(e);
+	}
 }

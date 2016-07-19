@@ -2,6 +2,7 @@ package com.philip.fin.user;
 
 import java.util.Date;
 
+import com.philip.fin.accounting.AccountConstants;
 import com.philip.fin.accounting.AccountingManager;
 
 import junit.framework.TestCase;
@@ -31,7 +32,7 @@ public class UserDAOTest extends TestCase {
 		user.setCreate_time(new Date());
 		user.setUpdate_time(new Date());
 		user.setLast_login(new Date());
-		user.setLast_operation(AccountingManager.BIZ_OPER_NO_OPERATION);
+		user.setLast_operation(AccountConstants.BIZ_OPER_NO_OPERATION);
 		user.setAlive_flag(true);
 		user.setDelete_time(null);
 		
@@ -45,7 +46,7 @@ public class UserDAOTest extends TestCase {
 		assertEquals(tUser.getPassword(),"test123");
 		assertEquals(tUser.getMail_address(),"robbinpeng@163.com");
 		assertEquals(tUser.getMobile(),"13561073279");
-		assertEquals(tUser.getLast_operation(),AccountingManager.BIZ_OPER_NO_OPERATION);
+		assertEquals(tUser.getLast_operation(),AccountConstants.BIZ_OPER_NO_OPERATION);
 		assertEquals(tUser.isAlive_flag(),true);
 		
 		//delete it from database:

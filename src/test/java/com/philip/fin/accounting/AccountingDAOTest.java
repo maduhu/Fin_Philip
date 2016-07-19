@@ -30,7 +30,7 @@ public class AccountingDAOTest extends TestCase {
 		account.setAccount_name("user_01_saving");
 		account.setChinese_name("陈鹏的存款账户");
 		account.setDescription("robbin's account used as saving account");
-		account.setAccount_type(AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
+		account.setAccount_type(AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
 		account.setType_description("used depos");
 		account.setCreate_time(new Date());
 		account.setUpdate_time(new Date());
@@ -51,33 +51,35 @@ public class AccountingDAOTest extends TestCase {
 		account = null;
 		account = dao.getAccount(account_id);
 		
-		assertEquals(account.getAccount_num(),"0000100001");
+		String acc_num = String.format("%03d", AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT) + String.format("%07d", account_id);
+		
+		assertEquals(account.getAccount_num(),acc_num);
 		assertEquals(account.getAccount_name(),"user_01_saving");
 		assertEquals(account.getChinese_name(),"陈鹏的存款账户");
 		assertEquals(account.getDescription(),"robbin's account used as saving account");
-		assertEquals(account.getAccount_type(), AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
+		assertEquals(account.getAccount_type(), AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
 		assertEquals(account.getType_description(), "used depos");
 		assertEquals(account.getUser_account(),2);
 		
 		assertNotNull(account.getAccount_bal());
 		assertEquals(account.getAccount_bal().getId(),account_id);
-		assertEquals(account.getAccount_bal().getAccount_num(),"0000100001");
+		assertEquals(account.getAccount_bal().getAccount_num(),acc_num);
 		assertEquals(account.getAccount_bal().getAccount_name(),"user_01_saving");
 		
 		//retrive by user_id and account_type:
 		account = null;
-		account = dao.getAccount(2, AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
-		assertEquals(account.getAccount_num(),"0000100001");
+		account = dao.getAccount(2, AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
+		assertEquals(account.getAccount_num(),acc_num);
 		assertEquals(account.getAccount_name(),"user_01_saving");
 		assertEquals(account.getChinese_name(),"陈鹏的存款账户");
 		assertEquals(account.getDescription(),"robbin's account used as saving account");
-		assertEquals(account.getAccount_type(), AccountingManager.ACCOUNT_TYPE_USER_DEPOSIT);
+		assertEquals(account.getAccount_type(), AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
 		assertEquals(account.getType_description(), "used depos");
 		assertEquals(account.getUser_account(),2);
 		
 		assertNotNull(account.getAccount_bal());
 		assertEquals(account.getAccount_bal().getId(),account_id);
-		assertEquals(account.getAccount_bal().getAccount_num(),"0000100001");
+		assertEquals(account.getAccount_bal().getAccount_num(),acc_num);
 		assertEquals(account.getAccount_bal().getAccount_name(),"user_01_saving");
 		
 		//delete it from database:

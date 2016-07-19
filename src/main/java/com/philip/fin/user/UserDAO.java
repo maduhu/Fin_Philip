@@ -1,6 +1,7 @@
 package com.philip.fin.user;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -23,8 +24,9 @@ public class UserDAO {
 		configuration.configure();
 		
 		logger.debug("open the session..");
-		if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+		//if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 		if(sf == null){sf = configuration.buildSessionFactory();ss = sf.openSession();}
+		else ss = sf.openSession();
 	}
 	
 	public boolean setup() {
@@ -38,7 +40,7 @@ public class UserDAO {
 		}
 		
 		logger.debug("open the session..");
-		if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+		//if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 		sf = configuration.buildSessionFactory();
 		ss = sf.openSession();
 				
@@ -59,44 +61,63 @@ public class UserDAO {
 		return b;
 	}
 	
-	public int createUser(User user) throws Exception {
+	public int createUser(User user) throws UserException {
 		logger.debug("start to create user");
 		int user_id;
 		
 		this.setup();
 		
-		ss.beginTransaction();
-		ss.save(user);
-		user_id = user.getId();
-		ss.getTransaction().commit();
-		
+		try {
+			ss.beginTransaction();
+			ss.save(user);
+			user_id = user.getId();
+			ss.getTransaction().commit();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new UserException();
+		}
+
 		return user_id;
 	}
 	
-	public User getUser(int user_id) throws Exception {
+	public User getUser(int user_id) throws UserException {
 		logger.debug("try to get user");
 		User user = null;
 		
 		this.setup();
 		
-		ss.beginTransaction();
-		user = ss.get(User.class, user_id);
-		ss.getTransaction().commit();
-		
+		try {
+			ss.beginTransaction();
+			user = ss.get(User.class, user_id);
+			ss.getTransaction().commit();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new UserException();
+		}
+			
 		return user;
 	}
 	
-	public boolean deleteUser(User user) throws Exception {
+	public boolean deleteUser(User user) throws UserException {
 		logger.debug("try to delete user");
 		boolean b = false;
 		
 		this.setup();
 		
-		ss.beginTransaction();
-		ss.delete(user);
-		ss.getTransaction().commit();
-		
-		b = true;
+		try{
+			ss.beginTransaction();
+			ss.delete(user);
+			ss.getTransaction().commit();
+			
+			b = true;
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new UserException(e);
+		}
+
 		return b;
 	}
 }
