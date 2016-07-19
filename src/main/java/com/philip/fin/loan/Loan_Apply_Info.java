@@ -25,6 +25,9 @@ public class Loan_Apply_Info {
 	private boolean guaranty_flag;
 	private String guaranty_name;
 	private Blob guaranty_prove;
+	private Blob guaranty_evaluation;
+	private int warrant;
+	private Loan_Info loan_info=null;
 	public int getId() {
 		return id;
 	}
@@ -144,5 +147,23 @@ public class Loan_Apply_Info {
 	}
 	public void setGuaranty_prove(Blob guaranty_prove) {
 		this.guaranty_prove = guaranty_prove;
+	}
+	public Blob getGuaranty_evaluation() {
+		return guaranty_evaluation;
+	}
+	public void setGuaranty_evaluation(Blob guaranty_evaluation) {
+		this.guaranty_evaluation = guaranty_evaluation;
+	}
+	public int getWarrant() {
+		return warrant;
+	}
+	public void setWarrant(int warrant) {
+		this.warrant = warrant;
+	}
+	public Loan_Info getLoan_info() {
+		return loan_info;
+	}
+	public void setLoan_info(Loan_Info loan_info) {
+		this.loan_info = loan_info;
 	}
 }

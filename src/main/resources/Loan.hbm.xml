@@ -3,11 +3,83 @@
  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
  
  <hibernate-mapping>
- 	<class name="com.philip.fin.loan.Loan_Info" table="loan_Info" catalog="fin_philip">
+ 	<class name="com.philip.fin.loan.Loan_Apply_Info" table="loan_apply_info" catalog="fin_philip">
  		<id name="id" type="java.lang.Integer" >
  			<column name="id" />
  			<generator class="increment" />
  		</id>
+ 		<property name="user_id" type="java.lang.Integer" >
+ 			<column name="user_id" />
+ 		</property>
+ 		<property name="apply_amount" type="java.math.BigDecimal" >
+ 			<column name="apply_amount" />
+ 		</property>
+ 		<property name="loan_period" type="java.lang.Integer" >
+ 			<column name="loan_period" />
+ 		</property>
+ 		<property name="annual_interest" type="java.math.BigDecimal" >
+ 			<column name="annual_interest" />
+ 		</property>
+ 		<property name="raise_end_time" type="java.util.Date" >
+ 			<column name="raise_end_time" />
+ 		</property>
+ 		<property name="company_id" type="java.lang.Integer" >
+ 			<column name="company_id" />
+ 		</property>
+ 		<property name="loan_card" type="string" >
+ 			<column name="loan_card" length="20"/>
+ 		</property>
+ 		<property name="loan_card_bank" type="string" >
+ 			<column name="loan_card_bank" length="15"/>
+ 		</property>
+ 		<property name="loan_card_img" type="blob" >
+ 			<column name="loan_card_img" />
+ 		</property>
+ 		<property name="accountant_prove" type="blob" >
+ 			<column name="accountant_prove" />
+ 		</property>
+ 		<property name="treasure_prove" type="blob" >
+ 			<column name="treasure_prove" />
+ 		</property>
+ 		<property name="financial_report" type="blob" >
+ 			<column name="financial_report" />
+ 		</property>
+ 		<property name="tax_prove" type="blob" >
+ 			<column name="tax_prove" />
+ 		</property>
+ 		<property name="loan_investigation" type="string" >
+ 			<column name="loan_investigation" length="200"/>
+ 		</property>
+ 		<property name="loan_usage" type="string" >
+ 			<column name="loan_usage" length="200"/>
+ 		</property>
+ 		<property name="contact_prove" type="blob" >
+ 			<column name="contact_prove" />
+ 		</property>
+ 		<property name="guaranty_flag" type="boolean" >
+ 			<column name="guaranty_flag" />
+ 		</property>
+ 		<property name="guaranty_name" type="string" >
+ 			<column name="guaranty_name" length="40"/>
+ 		</property>
+ 		<property name="guaranty_prove" type="blob" >
+ 			<column name="guaranty_prove" />
+ 		</property>
+ 		<property name="guaranty_evaluation" type="blob" >
+ 			<column name="guaranty_evaluation" />
+ 		</property>
+ 		<property name="warrant" type="java.lang.Integer" >
+ 			<column name="warrant" />
+ 		</property>
+ 		<one-to-one name="loan_info" class="com.philip.fin.loan.Loan_Info" cascade="all">
+ 		</one-to-one>
+ 	</class>
+ 	<class name="com.philip.fin.loan.Loan_Info" table="loan_info" catalog="fin_philip">
+ 		<id name="id" type="java.lang.Integer" >
+ 			<column name="id" />
+ 			<generator class="increment" />
+ 		</id>
+ 		<one-to-one name="loan_apply_info" class="com.philip.fin.loan.Loan_Apply_Info"></one-to-one>
  		<property name="apply_id" type="java.lang.Integer">
  			<column name="apply_id" />
  		</property>
@@ -49,6 +121,66 @@
  		</property>
  		<property name="left_amount" type="java.math.BigDecimal">
  			<column name="left_amount" />
+ 		</property>
+ 	</class>
+ 	<class name="com.philip.fin.loan.Company_Info" table="Company_Info" catalog="fin_philip">
+ 		<id name="id" type="java.lang.Integer" >
+ 			<column name="id" />
+ 			<generator class="increment" />
+ 		</id>
+ 		<property name="company_name" type="string">
+ 			<column name="company_name" length="40"/>
+ 		</property>
+ 		<property name="company_loan_role" type="char">
+ 			<column name="company_loan_role" length="1" />
+ 		</property>
+ 		<property name="company_address" type="string">
+ 			<column name="company_address" length="80" />
+ 		</property>
+ 		<property name="company_type" type="char">
+ 			<column name="company_type" />
+ 		</property>
+ 		<property name="business" type="string">
+ 			<column name="business" length="200"/>
+ 		</property>
+ 		<property name="business_passport" type="blob">
+ 			<column name="business_passport" />
+ 		</property>
+ 		<property name="business_policy" type="blob">
+ 			<column name="business_policy" />
+ 		</property>
+ 		<property name="business_code" type="blob">
+ 			<column name="business_code" />
+ 		</property>
+ 		<property name="tax_code" type="blob">
+ 			<column name="tax_code" />
+ 		</property>
+ 		<property name="open_passport" type="blob">
+ 			<column name="open_passport" />
+ 		</property>
+ 		<property name="reg_capital" type="java.math.BigDecimal">
+ 			<column name="reg_capital" />
+ 		</property>
+ 		<property name="representive" type="string">
+ 			<column name="representive" length="15" />
+ 		</property>
+ 		<property name="representive_prove" type="blob">
+ 			<column name="representive_prove" />
+ 		</property>
+ 		<property name="employee_num" type="java.lang.Integer">
+ 			<column name="employee_num" />
+ 		</property>
+ 		<property name="start_date" type="java.util.Date">
+ 			<column name="start_date"  />
+ 		</property>
+ 		<property name="create_date" type="java.util.Date">
+ 			<column name="create_date" />
+ 		</property>
+ 		<property name="update_date" type="java.util.Date">
+ 			<column name="update_date" />
+ 		</property>
+ 		<property name="loan_record" type="java.lang.Integer">
+ 			<column name="loan_record" />
  		</property>
  	</class>
  </hibernate-mapping>
