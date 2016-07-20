@@ -3,7 +3,7 @@
  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
  
  <hibernate-mapping>
- 	<class name="com.philip.fin.loan.Loan_Apply_Info" table="loan_apply_info" catalog="fin_philip">
+ 	<class name="com.philip.fin.loan.Loan_Apply_Info" table="loan_apply" catalog="fin_philip">
  		<id name="id" type="java.lang.Integer" >
  			<column name="id" />
  			<generator class="increment" />
@@ -11,13 +11,13 @@
  		<property name="user_id" type="java.lang.Integer" >
  			<column name="user_id" />
  		</property>
- 		<property name="apply_amount" type="java.math.BigDecimal" >
+ 		<property name="amount" type="java.math.BigDecimal" >
  			<column name="apply_amount" />
  		</property>
  		<property name="loan_period" type="java.lang.Integer" >
  			<column name="loan_period" />
  		</property>
- 		<property name="annual_interest" type="java.math.BigDecimal" >
+ 		<property name="interest" type="java.math.BigDecimal" >
  			<column name="annual_interest" />
  		</property>
  		<property name="raise_end_time" type="java.util.Date" >
@@ -53,8 +53,8 @@
  		<property name="loan_usage" type="string" >
  			<column name="loan_usage" length="200"/>
  		</property>
- 		<property name="contact_prove" type="blob" >
- 			<column name="contact_prove" />
+ 		<property name="contract_prove" type="blob" >
+ 			<column name="contract_prove" />
  		</property>
  		<property name="guaranty_flag" type="boolean" >
  			<column name="guaranty_flag" />
@@ -75,14 +75,13 @@
  		</one-to-one>
  	</class>
  	<class name="com.philip.fin.loan.Loan_Info" table="loan_info" catalog="fin_philip">
- 		<id name="id" type="java.lang.Integer" >
+ 		<id name="id" type="java.lang.Integer">
  			<column name="id" />
- 			<generator class="increment" />
+ 			<generator class="foreign">
+ 				<param name="property">loan_apply</param>
+ 			</generator>
  		</id>
- 		<one-to-one name="loan_apply_info" class="com.philip.fin.loan.Loan_Apply_Info"></one-to-one>
- 		<property name="apply_id" type="java.lang.Integer">
- 			<column name="apply_id" />
- 		</property>
+ 		<one-to-one name="loan_apply" class="com.philip.fin.loan.Loan_Apply_Info"></one-to-one>
  		<property name="loan_name" type="string">
  			<column name="loan_name" length="20" not-null="true" />
  		</property>
@@ -181,6 +180,9 @@
  		</property>
  		<property name="loan_record" type="java.lang.Integer">
  			<column name="loan_record" />
+ 		</property>
+ 		<property name="loan_id" type="java.lang.Integer">
+ 			<column name="loan_id" />
  		</property>
  	</class>
  </hibernate-mapping>

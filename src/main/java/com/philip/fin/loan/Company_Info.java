@@ -11,18 +11,26 @@ public class Company_Info {
 	private String company_address;
 	private char company_type;
 	private String business;
+	private String business_passport_path;
 	private Blob business_passport;
+	private String business_policy_path;
+	private Blob business_policy;
+	private String business_code_path;
 	private Blob business_code;
+	private String tax_code_path;
 	private Blob tax_code;
+	private String open_passport_path;
 	private Blob open_passport;
 	private BigDecimal reg_capital;
 	private String representive;
+	private String representive_prove_path;
 	private Blob representive_prove;
 	private int employee_num;
 	private Date start_date;
 	private Date create_date;
 	private Date update_date;
 	private int loan_record;
+	private int loan_id;
 	public int getId() {
 		return id;
 	}
@@ -64,6 +72,18 @@ public class Company_Info {
 	}
 	public void setBusiness_passport(Blob business_passport) {
 		this.business_passport = business_passport;
+	}
+	public String getBusiness_policy_path() {
+		return business_policy_path;
+	}
+	public void setBusiness_policy_path(String business_policy_path) {
+		this.business_policy_path = business_policy_path;
+	}
+	public Blob getBusiness_policy() {
+		return business_policy;
+	}
+	public void setBusiness_policy(Blob business_policy) {
+		this.business_policy = business_policy;
 	}
 	public Blob getBusiness_code() {
 		return business_code;
@@ -130,6 +150,42 @@ public class Company_Info {
 	}
 	public void setLoan_record(int loan_record) {
 		this.loan_record = loan_record;
+	}
+	public String getBusiness_passport_path() {
+		return business_passport_path;
+	}
+	public void setBusiness_passport_path(String business_passport_path) {
+		this.business_passport_path = business_passport_path;
+	}
+	public String getBusiness_code_path() {
+		return business_code_path;
+	}
+	public void setBusiness_code_path(String business_code_path) {
+		this.business_code_path = business_code_path;
+	}
+	public String getTax_code_path() {
+		return tax_code_path;
+	}
+	public void setTax_code_path(String tax_code_path) {
+		this.tax_code_path = tax_code_path;
+	}
+	public String getOpen_passport_path() {
+		return open_passport_path;
+	}
+	public void setOpen_passport_path(String open_passport_path) {
+		this.open_passport_path = open_passport_path;
+	}
+	public String getRepresentive_prove_path() {
+		return representive_prove_path;
+	}
+	public void setRepresentive_prove_path(String representive_prove_path) {
+		this.representive_prove_path = representive_prove_path;
+	}
+	public int getLoan_id() {
+		return loan_id;
+	}
+	public void setLoan_id(int loan_id) {
+		this.loan_id = loan_id;
 	}
 	
 }

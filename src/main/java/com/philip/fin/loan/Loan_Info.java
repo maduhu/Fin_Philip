@@ -5,7 +5,6 @@ import java.util.Date;
 
 public class Loan_Info {
 	private int id;
-	private int apply_id;
 	private String loan_name;
 	private char verify_status;
 	private int loan_period;
@@ -19,17 +18,25 @@ public class Loan_Info {
 	private String loan_description;
 	private BigDecimal minimum_raise_amount;
 	private BigDecimal left_amount;
+	private Loan_Apply_Info loan_apply;
+	private float percentage;
+	public float getPercentage() {
+		return percentage;
+	}
+	public void setPercentage(float percentage) {
+		this.percentage = percentage;
+	}
+	public Loan_Apply_Info getLoan_apply() {
+		return loan_apply;
+	}
+	public void setLoan_apply(Loan_Apply_Info loan_apply) {
+		this.loan_apply = loan_apply;
+	}
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public int getApply_id() {
-		return apply_id;
-	}
-	public void setApply_id(int apply_id) {
-		this.apply_id = apply_id;
 	}
 	public String getLoan_name() {
 		return loan_name;

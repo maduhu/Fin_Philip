@@ -8,6 +8,9 @@ public class AccountConstants {
 	public static final int BIZ_OPER_DRAW_MONEY = 3;
 	public static final int BIZ_OPER_INVEST_MONEY = 4;
 	public static final int BIZ_OPER_RAISE_FAILED_RETURN = 5;
+	public static final int BIZ_OPER_PAY_TO_LENDER_ACCOUNT = 6;
+	public static final int BIZ_OPER_REPAY_TO_PLATFORM = 7;
+	public static final int BIZ_OPER_PAY_BACK_TO_USER = 8;
 	
 	//the account types:
 	public static final int ACCOUNT_TYPE_PLATFORM_ACCOUNT = 1;

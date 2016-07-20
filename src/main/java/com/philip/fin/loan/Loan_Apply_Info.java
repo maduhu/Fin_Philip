@@ -14,17 +14,25 @@ public class Loan_Apply_Info {
 	private int company_id;
 	private String loan_card;
 	private String loan_card_bank;
+	private String loan_card_img_path;
 	private Blob loan_card_img;
+	private String accountant_prove_path;
 	private Blob accountant_prove;
+	private String treasure_prove_path;
 	private Blob treasure_prove;
+	private String financial_report_path;
 	private Blob financial_report;
+	private String tax_prove_path;
 	private Blob tax_prove;
 	private String loan_investigation;
 	private String loan_usage;
+	private String contract_prove_path;
 	private Blob contract_prove;
 	private boolean guaranty_flag;
 	private String guaranty_name;
+	private String guaranty_prove_path;
 	private Blob guaranty_prove;
+	private String guaranty_evaluation_path;
 	private Blob guaranty_evaluation;
 	private int warrant;
 	private Loan_Info loan_info=null;
@@ -159,6 +167,54 @@ public class Loan_Apply_Info {
 	}
 	public void setWarrant(int warrant) {
 		this.warrant = warrant;
+	}
+	public String getLoan_card_img_path() {
+		return loan_card_img_path;
+	}
+	public void setLoan_card_img_path(String loan_card_img_path) {
+		this.loan_card_img_path = loan_card_img_path;
+	}
+	public String getAccountant_prove_path() {
+		return accountant_prove_path;
+	}
+	public void setAccountant_prove_path(String accountant_prove_path) {
+		this.accountant_prove_path = accountant_prove_path;
+	}
+	public String getTreasure_prove_path() {
+		return treasure_prove_path;
+	}
+	public void setTreasure_prove_path(String treasure_prove_path) {
+		this.treasure_prove_path = treasure_prove_path;
+	}
+	public String getFinancial_report_path() {
+		return financial_report_path;
+	}
+	public void setFinancial_report_path(String financial_report_path) {
+		this.financial_report_path = financial_report_path;
+	}
+	public String getTax_prove_path() {
+		return tax_prove_path;
+	}
+	public void setTax_prove_path(String tax_prove_path) {
+		this.tax_prove_path = tax_prove_path;
+	}
+	public String getContract_prove_path() {
+		return contract_prove_path;
+	}
+	public void setContract_prove_path(String contract_prove_path) {
+		this.contract_prove_path = contract_prove_path;
+	}
+	public String getGuaranty_prove_path() {
+		return guaranty_prove_path;
+	}
+	public void setGuaranty_prove_path(String guaranty_prove_path) {
+		this.guaranty_prove_path = guaranty_prove_path;
+	}
+	public String getGuaranty_evaluation_path() {
+		return guaranty_evaluation_path;
+	}
+	public void setGuaranty_evaluation_path(String guaranty_evaluation_path) {
+		this.guaranty_evaluation_path = guaranty_evaluation_path;
 	}
 	public Loan_Info getLoan_info() {
 		return loan_info;

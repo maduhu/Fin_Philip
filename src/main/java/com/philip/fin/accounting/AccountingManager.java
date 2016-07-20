@@ -3,16 +3,29 @@ package com.philip.fin.accounting;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
+
+import com.philip.fin.invest.Invest;
+import com.philip.fin.invest.InvestManager;
 
 public class AccountingManager {
 		
 	private AccountingDAO accountingDAO = null;
 	
+	private static AccountingManager manager = null;
+	
+	private InvestManager investManager = InvestManager.getInstance(); 
+	
 	private static final Logger logger = Logger.getLogger(AccountingManager.class);
 	
-	public AccountingManager() {
+	public static AccountingManager getInstance(){
+		if( manager == null ) manager = new AccountingManager();
+		return manager;
+	}
+	
+	private AccountingManager() {
 		accountingDAO = new AccountingDAO();
 	}
 	
@@ -304,4 +317,181 @@ public class AccountingManager {
 		return b;
 	}
 	
+	public boolean payToLender (int user_id, BigDecimal amount) {
+		boolean b = false;
+		Account accountL = null;
+		Account accountP = null;
+		
+		//Get the deposit&invest account:
+		try {
+			accountL = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_LOAN);
+			accountP = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
+			
+			//debit the user loan account and credit the platform account:
+			Document document = new Document();
+			document.setBusiness_event(AccountConstants.BIZ_OPER_PAY_TO_LENDER_ACCOUNT);
+			document.setDescription("the project successfully raised money, so transfer money to " + user_id + ":" + amount + "RMB from platform");
+			document.setCreate_time(new Date());
+			document.setUpdate_time(new Date());
+					
+			HashSet items = new HashSet();
+			Doc_Item item1 = new Doc_Item();
+			item1.setItem_id(1);
+			item1.setAccount_id(accountL.getAccount_id());
+			item1.setAmount(amount);
+			item1.setCredit_debit('d');
+			item1.setCreate_time(new Date());
+			item1.setUpdate_time(new Date());
+			items.add(item1);
+					
+			Doc_Item item2 = new Doc_Item();
+			item2.setItem_id(2);
+			item2.setAccount_id(AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
+			item2.setAmount(amount);
+			item2.setCredit_debit('c');
+			item2.setCreate_time(new Date());
+			item2.setUpdate_time(new Date());
+			items.add(item2);
+					
+			document.setDoc_items(items);
+			
+			accountingDAO.updateAccounts(document);
+			accountingDAO.postDocument(document);
+			
+			b = true;
+		} catch (AccountException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		return b;
+	}
+	
+	public boolean repayToPlatform (int user_id, BigDecimal amount, BigDecimal interest) {
+		boolean b = false;
+		Account accountL = null;
+		Account accountP = null;
+		Account accountI = null;
+		
+		//Get the deposit&invest account:
+		try {
+			accountL = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_LOAN);
+			accountP = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
+			
+			//debit the user loan account and credit the platform account:
+			Document document = new Document();
+			document.setBusiness_event(AccountConstants.BIZ_OPER_REPAY_TO_PLATFORM);
+			document.setDescription("the user repay back loan to platform");
+			document.setCreate_time(new Date());
+			document.setUpdate_time(new Date());
+					
+			HashSet items = new HashSet();
+			Doc_Item item1 = new Doc_Item();
+			item1.setItem_id(1);
+			item1.setAccount_id(accountL.getAccount_id());
+			item1.setAmount(amount);
+			item1.setCredit_debit('c');
+			item1.setCreate_time(new Date());
+			item1.setUpdate_time(new Date());
+			items.add(item1);
+					
+			Doc_Item item2 = new Doc_Item();
+			item2.setItem_id(2);
+			item2.setAccount_id(AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
+			item2.setAmount(amount);
+			item2.setCredit_debit('d');
+			item2.setCreate_time(new Date());
+			item2.setUpdate_time(new Date());
+			items.add(item2);
+			
+			Doc_Item item3 = new Doc_Item();
+			item3.setItem_id(3);
+			item3.setAccount_id(AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
+			item3.setAmount(interest);
+			item3.setCredit_debit('d');
+			item3.setCreate_time(new Date());
+			item3.setUpdate_time(new Date());
+			items.add(item3);
+					
+			document.setDoc_items(items);
+			
+			accountingDAO.updateAccounts(document);
+			accountingDAO.postDocument(document);
+			
+			b = true;
+		} catch (AccountException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		return b;
+	}
+	
+	public boolean payToUsers(int user_id, BigDecimal amount, BigDecimal interest) {
+		boolean b = false;
+		Account accountD = null;
+		Account accountP = null;
+			
+		//Get the deposit&invest account:
+		try {
+			accountD = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
+			accountP = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
+			
+			//debit the user loan account and credit the platform account:
+			Document document = new Document();
+			document.setBusiness_event(AccountConstants.BIZ_OPER_PAY_BACK_TO_USER);
+			document.setDescription("platform send the money to user account");
+			document.setCreate_time(new Date());
+			document.setUpdate_time(new Date());
+					
+			HashSet items = new HashSet();
+			Doc_Item item1 = new Doc_Item();
+			item1.setItem_id(1);
+			item1.setAccount_id(accountD.getAccount_id());
+			item1.setAmount(amount);
+			item1.setCredit_debit('d');
+			item1.setCreate_time(new Date());
+			item1.setUpdate_time(new Date());
+			items.add(item1);
+			
+			Doc_Item item2 = new Doc_Item();
+			item2.setItem_id(2);
+			item2.setAccount_id(accountD.getAccount_id());
+			item2.setAmount(interest);
+			item2.setCredit_debit('d');
+			item2.setCreate_time(new Date());
+			item2.setUpdate_time(new Date());
+			items.add(item2);
+					
+			Doc_Item item3 = new Doc_Item();
+			item3.setItem_id(3);
+			item3.setAccount_id(AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
+			item3.setAmount(amount);
+			item3.setCredit_debit('c');
+			item3.setCreate_time(new Date());
+			item3.setUpdate_time(new Date());
+			items.add(item3);
+			
+			Doc_Item item4 = new Doc_Item();
+			item4.setItem_id(4);
+			item4.setAccount_id(AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
+			item4.setAmount(interest);
+			item4.setCredit_debit('c');
+			item4.setCreate_time(new Date());
+			item4.setUpdate_time(new Date());
+			items.add(item4);
+					
+			document.setDoc_items(items);
+			
+			accountingDAO.updateAccounts(document);
+			accountingDAO.postDocument(document);
+			
+			b = true;
+		} catch (AccountException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		return b;
+	}
 }

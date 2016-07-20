@@ -1,8 +1,15 @@
 package com.philip.fin.loan;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -66,29 +73,75 @@ public class LoanDAO {
 		return b;
 	}
 	
-	public int createLoanWithCompany(Loan_Apply_Info loan, Company_Info company) throws LoanException{
-		logger.debug("start to create a new loan with company information");
+	public int createCompany(Company_Info company) throws LoanException{
+		logger.debug("start to create a company information");
 		int loan_id = 0;
+		InputStream in = null;
+		Blob blob = null;
 		
 		this.setup();
 		
 		try {
 			ss.beginTransaction();
 			//create loan with no company:
-			ss.save(loan);
-			loan_id = loan.getId();
-			loan.getLoan_info().setId(loan_id);
 			
-			//create company info:
+			//solve the blob:
+			//1.business_passport:
+			if(company.getBusiness_passport_path()!=null){
+				in = new FileInputStream(company.getBusiness_passport_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setBusiness_passport(blob);
+			}
+			
+			//2.business_policy:
+			if(company.getBusiness_policy_path()!=null){
+				in = new FileInputStream(company.getBusiness_policy_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setBusiness_passport(blob);
+			}
+			
+			//3.business_code:
+			if(company.getBusiness_code_path()!=null){
+				in = new FileInputStream(company.getBusiness_code_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setBusiness_code(blob);
+			}
+			
+			
+			//4.tax_code:
+			if(company.getTax_code_path()!=null){
+				in = new FileInputStream(company.getTax_code_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setTax_code(blob);
+			}
+			
+			//5.open_passport:
+			if(company.getOpen_passport()!=null){
+				in = new FileInputStream(company.getOpen_passport_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setOpen_passport(blob);
+			}
+			
+			//6.representive_prove:
+			if(company.getRepresentive_prove_path()!=null){
+				in = new FileInputStream(company.getRepresentive_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setBusiness_passport(blob);
+			}
+		
 			ss.save(company);
-			loan.setCompany_id(company.getId());
-			
-			//create loan with company:
-			ss.save(loan);
 			
 			ss.getTransaction().commit();
 			
 		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} catch (IOException e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new LoanException(e);
@@ -102,6 +155,8 @@ public class LoanDAO {
 	public int createLoanWithoutCompany(Loan_Apply_Info loan) throws LoanException {
 		logger.debug("start to create a new loan with company information using before");
 		int loan_id = 0;
+		InputStream in = null;
+		Blob blob = null;
 		
 		this.setup();
 		
@@ -112,10 +167,75 @@ public class LoanDAO {
 			loan_id = loan.getId();
 			loan.getLoan_info().setId(loan_id);
 			
+			//solve the blob:
+			//1.loan_bank_card_img:
+			if(loan.getLoan_card_img_path()!=null){
+				in = new FileInputStream(loan.getLoan_card_img_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setLoan_card_img(blob);
+			}
+				
+			//2.accountant_prove:
+			if(loan.getAccountant_prove()!=null){
+				in = new FileInputStream(loan.getAccountant_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setAccountant_prove(blob);
+			}
+			
+			//3.treasure_prove:
+			if(loan.getTreasure_prove_path()!=null){
+				in = new FileInputStream(loan.getTreasure_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setTreasure_prove(blob);
+			}
+
+			//4.financial_report:
+			if(loan.getFinancial_report_path()!=null){
+				in = new FileInputStream(loan.getFinancial_report_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setFinancial_report(blob);
+			}
+			
+			//5.tax_report:
+			if(loan.getTax_prove_path()!=null){
+				in = new FileInputStream(loan.getTax_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setTax_prove(blob);
+			}
+
+			//6.contract_prove:
+			if(loan.getContract_prove_path()!=null){
+				in = new FileInputStream(loan.getContract_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setContract_prove(blob);
+			}
+
+			//7.guaranty_prove:
+			if(loan.getGuaranty_prove_path()!=null){
+				in = new FileInputStream(loan.getGuaranty_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setGuaranty_prove(blob);
+			}
+			
+			//8.guaranty_evaluation:
+			if(loan.getGuaranty_evaluation_path()!=null){
+				in = new FileInputStream(loan.getGuaranty_evaluation_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setGuaranty_evaluation(blob);
+			}
+
 			ss.save(loan);
 			
 			ss.getTransaction().commit();
 			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -195,5 +315,295 @@ public class LoanDAO {
 		}
 		
 		return b;
+	}
+	public boolean updateLoanApplyInfo(Loan_Apply_Info loan) throws LoanException{
+		logger.debug("start to update a loan using before");
+		boolean b = false;
+		int loan_id = 0;
+		InputStream in = null;
+		Blob blob = null;
+		
+		try {
+			ss.beginTransaction();
+			
+			//solve the blob:
+			//1.loan_bank_card_img:
+			if(loan.getLoan_card_img_path()!=null){
+				in = new FileInputStream(loan.getLoan_card_img_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setLoan_card_img(blob);
+			}
+				
+			//2.accountant_prove:
+			if(loan.getAccountant_prove()!=null){
+				in = new FileInputStream(loan.getAccountant_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setAccountant_prove(blob);
+			}
+			
+			//3.treasure_prove:
+			if(loan.getTreasure_prove_path()!=null){
+				in = new FileInputStream(loan.getTreasure_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setTreasure_prove(blob);
+			}
+
+			//4.financial_report:
+			if(loan.getFinancial_report_path()!=null){
+				in = new FileInputStream(loan.getFinancial_report_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setFinancial_report(blob);
+			}
+			
+			//5.tax_report:
+			if(loan.getTax_prove_path()!=null){
+				in = new FileInputStream(loan.getTax_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setTax_prove(blob);
+			}
+
+			//6.contract_prove:
+			if(loan.getContract_prove_path()!=null){
+				in = new FileInputStream(loan.getContract_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setContract_prove(blob);
+			}
+
+			//7.guaranty_prove:
+			if(loan.getGuaranty_prove_path()!=null){
+				in = new FileInputStream(loan.getGuaranty_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setGuaranty_prove(blob);
+			}
+			
+			//8.guaranty_evaluation:
+			if(loan.getGuaranty_evaluation_path()!=null){
+				in = new FileInputStream(loan.getGuaranty_evaluation_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				loan.setGuaranty_evaluation(blob);
+			}
+
+			ss.save(loan);
+			
+			ss.getTransaction().commit();
+			
+			b = true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} finally {
+			this.clearup();
+		}
+		
+		return b;
+	}
+	
+	public boolean updateLoanInfo(Loan_Info loan) throws LoanException{
+		boolean b = false;
+		
+		try {
+			ss.beginTransaction();
+			ss.save(loan);
+			ss.getTransaction().commit();
+			
+			b = true;
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		}
+		
+		return b;
+	}
+	
+	public boolean updateCompanyInfo(Company_Info company) throws LoanException{
+		boolean b = false;
+		Blob blob = null;
+		InputStream in = null;
+		
+		try {
+			//solve the blob:
+			//1.business_passport:
+			if(company.getBusiness_passport_path()!=null){
+				in = new FileInputStream(company.getBusiness_passport_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setBusiness_passport(blob);
+			}
+			
+			//2.business_policy:
+			if(company.getBusiness_policy_path()!=null){
+				in = new FileInputStream(company.getBusiness_policy_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setBusiness_passport(blob);
+			}
+			
+			//3.business_code:
+			if(company.getBusiness_code_path()!=null){
+				in = new FileInputStream(company.getBusiness_code_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setBusiness_code(blob);
+			}
+			
+			
+			//4.tax_code:
+			if(company.getTax_code_path()!=null){
+				in = new FileInputStream(company.getTax_code_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setTax_code(blob);
+			}
+			
+			//5.open_passport:
+			if(company.getOpen_passport()!=null){
+				in = new FileInputStream(company.getOpen_passport_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setOpen_passport(blob);
+			}
+			
+			//6.representive_prove:
+			if(company.getRepresentive_prove_path()!=null){
+				in = new FileInputStream(company.getRepresentive_prove_path());
+				blob = Hibernate.getLobCreator(ss).createBlob(in, in.available()); 
+				company.setBusiness_passport(blob);
+			}
+			
+			ss.beginTransaction();
+			ss.save(company);
+			ss.getTransaction().commit();
+			
+			b = true;
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} finally {
+			this.clearup();
+		}
+		
+		return b;
+	}
+	
+	public boolean updateLoanStatus(int loan_id, char status) throws LoanException{
+		logger.debug("to update the loan verify status");
+		boolean b = false;
+		String hql = null;
+		
+		this.setup();
+		
+		try {
+			ss.beginTransaction();
+			
+			hql = "update com.philip.fin.loan.Loan_Info set verify_status = :status where id = :id";
+			Query query = ss.createQuery(hql);
+			query.setParameter("status", status);
+			query.setParameter("id", loan_id);
+			
+			int result = query.executeUpdate();
+			ss.getTransaction().commit();
+			
+			if (result != 0)b = true;
+			logger.debug("successfully update the status");
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} finally {
+			this.clearup();
+		}
+
+		return b;
+	}
+	
+	public boolean updateLoan_Company(Company_Info company, int loan_id) throws LoanException {
+		logger.debug("to update the loan 's company");
+		boolean b = false;
+		String hql = null;
+		
+		try {
+			ss.beginTransaction();
+			
+			hql = "update com.philip.fin.loan.Loan_Apply set company_id = :company_id where id = :id";
+			Query query = ss.createQuery(hql);
+			query.setParameter("company_id", company.getId());
+			query.setParameter("id", loan_id);
+			
+			int result = query.executeUpdate();
+			ss.getTransaction().commit();
+			
+			if (result != 0)b = true;
+			logger.debug("successfully connect the company to loan");
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} finally {
+			this.clearup();
+		}
+
+		return b;
+	}
+	
+	public ArrayList getLoanApplyListByStatus(char status) throws LoanException{
+		logger.debug("to get Loan Applied by status");
+		ArrayList<Loan_Info> list = new ArrayList();
+		
+		this.setup();
+		
+		try {
+			ss.beginTransaction();
+			String hql = "from loan_info where verify_status = ?";
+			Query query = ss.createQuery(hql);
+			query.setParameter(0, status);
+			
+			list = (ArrayList)query.list();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} finally {
+			this.clearup();
+		}
+		
+		return list;
+	}
+	
+	public Loan_Info getLoanInfo(int loan_id) throws LoanException{
+		logger.debug("to get loan information");
+		Loan_Info loan = null;
+		
+		this.setup();
+		
+		try {
+			ss.beginTransaction();
+			loan = (Loan_Info)ss.get(Loan_Info.class, loan_id);
+			ss.getTransaction().commit();
+			
+			loan.setPercentage(loan.getRaised_amount().divide(loan.getAmount()).floatValue());
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new LoanException(e);
+		} finally {
+			this.clearup();
+		}
+		
+		return loan;
 	}
 }
