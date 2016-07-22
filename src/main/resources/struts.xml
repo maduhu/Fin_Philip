@@ -3,8 +3,8 @@
 
 <struts>
 	<package name="default" extends="struts-default">
-	<action  name="login" class="com.philip.fin.test.LoginAction">
-		<result >/success.jsp</result>
+	<action name="register" class="com.philip.fin.user.RegisterAction">
+		<result>/success.jsp</result>
 		<result name="error">/error.jsp</result>
 	</action>
 	</package>
