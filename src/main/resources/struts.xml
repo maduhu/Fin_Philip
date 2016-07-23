@@ -7,5 +7,14 @@
 		<result>/success.jsp</result>
 		<result name="error">/error.jsp</result>
 	</action>
+	<action name="showAccount" class="com.philip.fin.action.ShowAccountAction">
+		<result>/account.jsp</result>
+	</action>
+	<action name="deposit" class="com.philip.fin.action.DepositAction">
+		<result>/account.jsp</result>
+	</action>
+	<action name="draw" class="com.philip.fin.action.DrawAction">
+		<result>/account.jsp</result>
+	</action>
 	</package>
 </struts>

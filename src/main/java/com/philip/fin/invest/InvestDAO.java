@@ -11,6 +11,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import com.philip.fin.basic.HibernateUtil;
 import com.philip.fin.loan.Loan_Apply_Info;
 import com.philip.fin.loan.Loan_Info;
 
@@ -25,9 +26,9 @@ public class InvestDAO {
 	
 	public InvestDAO() {
 		logger.debug("Construct Invest DAO");
-		logger.debug("set configuration..");
-		if(configuration == null)configuration=new Configuration(); 
-		configuration.configure();
+		//logger.debug("set configuration..");
+		//if(configuration == null)configuration=new Configuration(); 
+		//configuration.configure();
 	}
 	
 	public boolean setup() {
@@ -42,12 +43,11 @@ public class InvestDAO {
 		
 		logger.debug("open the session..");
 		//if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-		if(sf==null)
-		{
+		if(sf==null){
 			sf = configuration.buildSessionFactory();
 			ss = sf.openSession();
 		} else {
-			ss = sf.openSession();
+			if (!ss.isConnected()) ss = sf.openSession();
 		}	
 				
 		logger.debug("successly setup the connection");
@@ -61,7 +61,7 @@ public class InvestDAO {
 		boolean b = false;
 		
 		if(ss!=null&&ss.isConnected())ss.close();
-		if(sf!=null&&ss.isConnected())sf.close();
+		if(sf!=null)sf.close();
 		
 		logger.debug("the session successfully closed");
 		
@@ -75,6 +75,9 @@ public class InvestDAO {
 		Loan_Info loan = null;
 		
 		logger.debug("start to create one invest record");
+		
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -92,6 +95,8 @@ public class InvestDAO {
 			e.printStackTrace();
 			logger.error(e);
 			throw new InvestException(e);
+		} finally {
+			ss.close();
 		}
 		
 		return invest_id;
@@ -102,6 +107,9 @@ public class InvestDAO {
 		String hql = null;
 		
 		logger.debug("start to get all the investors invest to " + loan_id + " loan");
+		
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -114,6 +122,8 @@ public class InvestDAO {
 			e.printStackTrace();
 			logger.error(e);
 			throw new InvestException(e);
+		} finally {
+			ss.close();
 		}
 		
 		return investors;

@@ -16,10 +16,10 @@
 	</appender>
 	
 	<appender name="FILEOUT" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="G:/Log/output.log" />
+		<param name="File" value="C:/log/output.log" />
 		<param name="Append" value="true" />
 		<param name="MaxBackupIndex" value="10" />
-		<param name="FilePattern" value="G:/log/$${date:yyyy-MM/app-%d{yyyy-MM-dd-HH}-%i.log.gz"/>
+		<param name="FilePattern" value="C:/log/$${date:yyyy-MM/app-%d{yyyy-MM-dd-HH}-%i.log.gz"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%p (%c:%L) - %m%n" />
 		</layout>

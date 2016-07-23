@@ -11,7 +11,7 @@ public class InvestManager {
 	
 	private static InvestManager manager = null;
 	
-	private AccountingManager accountingManager = AccountingManager.getInstance();
+	private AccountingManager accountingManager = null;
 	
 	private static final Logger logger = Logger.getLogger(InvestManager.class);
 	
@@ -29,6 +29,7 @@ public class InvestManager {
 			investDAO.createInvest(invest);
 			
 			//accounting:
+			accountingManager = AccountingManager.getInstance();
 			accountingManager.invest(invest.getUser(), invest.getAmount());
 		} catch (InvestException e) {
 			// TODO Auto-generated catch block

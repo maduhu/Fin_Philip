@@ -17,8 +17,8 @@ public class LoanManager {
 	
 	private static LoanManager manager = null;
 	
-	private AccountingManager accountingManager = AccountingManager.getInstance();
-	private InvestManager investManager = InvestManager.getInstance();
+	private AccountingManager accountingManager = null;
+	private InvestManager investManager = null;
 	
 	private static final Logger logger = Logger.getLogger(LoanManager.class);
 	
@@ -121,6 +121,7 @@ public class LoanManager {
 		
 		loan = manager.getLoanApplyById(loan_id);
 		//accounting:
+		accountingManager = AccountingManager.getInstance();
 		accountingManager.payToLender(loan.getUser_id(), loan.getAmount());
 		
 		try {
@@ -139,6 +140,7 @@ public class LoanManager {
 		//accounting:
 		//calculate amount to be paid:
 		//BigDecimal amount = loan.getAmount().multiply(new BigDecimal( 1 + loan.getInterest().doubleValue()/100));
+		accountingManager = AccountingManager.getInstance();
 		accountingManager.repayToPlatform(loan.getUser_id(), loan.getAmount(), loan.getAmount().multiply(loan.getInterest()).divide(new BigDecimal(100)));
 		
 		try {
@@ -159,8 +161,11 @@ public class LoanManager {
 		loan = manager.getLoanApplyById(loan_id);
 		interest = loan.getInterest().floatValue();
 		
+		investManager = InvestManager.getInstance();
 		investors = investManager.getInvestRecords(loan_id);
 		Iterator i = investors.iterator();
+		
+		accountingManager = AccountingManager.getInstance();
 		
 		while(i.hasNext()){
 			invest = (Invest)i.next();

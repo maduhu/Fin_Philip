@@ -5,13 +5,20 @@ import org.apache.log4j.Logger;
 public class UserManager {
 	private UserDAO dao = null;
 	
+	private static UserManager manager = null;
+	
 	private static final Logger logger = Logger.getLogger(UserManager.class);
 	
-	public UserManager() {
+	private UserManager() {
 		dao = new UserDAO();
 	}
 	
-	public int createUser(User user) {
+	public static UserManager getInstance() {
+		if(manager == null) manager = new UserManager();
+		return manager;
+	}
+	
+	public int createUser(User user) throws UserException{
 		boolean b = false;
 		String salt;
 		String encryptPass;
@@ -33,9 +40,11 @@ public class UserManager {
 			logger.error("create user failed!");
 			logger.error(e);
 			e.printStackTrace();
+			throw new UserException(e);
 		} finally {
-			return user_id;
+			
 		}
+		return user_id;
 	}
 	
 	public User getUser(int user_id) {

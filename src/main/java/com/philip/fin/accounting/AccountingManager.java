@@ -7,6 +7,9 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import com.philip.fin.event.Event;
+import com.philip.fin.event.EventException;
+import com.philip.fin.event.EventManager;
 import com.philip.fin.invest.Invest;
 import com.philip.fin.invest.InvestManager;
 
@@ -16,7 +19,9 @@ public class AccountingManager {
 	
 	private static AccountingManager manager = null;
 	
-	private InvestManager investManager = InvestManager.getInstance(); 
+	private InvestManager investManager = null; 
+	
+	private EventManager eventManager = null;
 	
 	private static final Logger logger = Logger.getLogger(AccountingManager.class);
 	
@@ -33,79 +38,89 @@ public class AccountingManager {
 		boolean b = false;
 		
 		try {
+			
 			//create deposit account:
 			Account account1 = new Account();
 			//account1.setAccount_num("0100000101");
-			account1.setAccount_name("User " + user_id + "'s deposit account");
+			//account1.setAccount_num(account_num);
+			account1.setAccount_name("User " + user_id + " deposit");
 			account1.setChinese_name("" + user_name + "的储蓄账户");
 			account1.setAccount_type(AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
-			account1.setType_description("user deposit account for saving money");
-			account1.setDescription("User " + user_name + "'s deposit account to save money to be used in the platform");
+			account1.setType_description("user save");
+			account1.setDescription("User " + user_name + "'s deposit account to save money");
 			account1.setCreate_time(new Date());
 			account1.setUpdate_time(new Date());
 			account1.setUser_account(user_id);
 			//account1.getAccount_bal().setAccount_num(account_num);
-			account1.getAccount_bal().setAccount_name("User " + user_id + "'s deposit account");
+			account1.getAccount_bal().setAccount_name("User " + user_id + " deposit");
 			account1.getAccount_bal().setCreate_time(new Date());
 			account1.getAccount_bal().setUpdate_time(new Date());
+			account1.getAccount_bal().setAccount(account1);
+			account1.setD_C('c');
 			accountingDAO.createAccount(account1);
 			
 			//create invest account:
 			Account account2 = new Account();
 			//account2.setAccount_num("0100000102");
-			account2.setAccount_name("User " + user_id + "'s invest account");
+			account2.setAccount_name("User " + user_id + " invest");
 			account2.setChinese_name("" + user_name + "的投资账户");
 			account2.setAccount_type(AccountConstants.ACCOUNT_TYPE_USER_INVEST);
-			account2.setType_description("user invest account for investing project");
-			account2.setDescription("User " + user_name + "'s invest account to invest different projects");
+			account2.setType_description("investing");
+			account2.setDescription("User " + user_name + "'s account to invest money");
 			account2.setCreate_time(new Date());
 			account2.setUpdate_time(new Date());
 			account2.setUser_account(user_id);
 			//account2.getAccount_bal().setAccount_num(account_num);
-			account2.getAccount_bal().setAccount_name("User " + user_id + "'s invest account");
+			account2.getAccount_bal().setAccount_name("User " + user_id + "invest");
 			account2.getAccount_bal().setCreate_time(new Date());
 			account2.getAccount_bal().setUpdate_time(new Date());
+			account2.getAccount_bal().setAccount(account2);
+			account2.setD_C('c');
 			accountingDAO.createAccount(account2);
 			
 			//create loan account:
 			Account account3 = new Account();
 			//account3.setAccount_num("0100000103");
-			account3.setAccount_name("User " + user_id + "'s loan account");
+			account3.setAccount_name("User " + user_id + "loan");
 			account3.setChinese_name("" + user_name + "的借款账户");
 			account3.setAccount_type(AccountConstants.ACCOUNT_TYPE_USER_LOAN);
-			account3.setType_description("user loan account for accept platform loan");
+			account3.setType_description("loan acc");
 			account3.setDescription("User " + user_name + "'s loan account to accept platform loan");
 			account3.setCreate_time(new Date());
 			account3.setUpdate_time(new Date());
 			account3.setUser_account(user_id);
 			//account3.getAccount_bal().setAccount_num(account_num);
-			account3.getAccount_bal().setAccount_name("User " + user_id + "'s loan account");
+			account3.getAccount_bal().setAccount_name("User " + user_id + " loan");
 			account3.getAccount_bal().setCreate_time(new Date());
 			account3.getAccount_bal().setUpdate_time(new Date());
+			account3.getAccount_bal().setAccount(account3);
+			account3.setD_C('d');
 			accountingDAO.createAccount(account3);
 			
 			//create account payable account:
 			Account account4 = new Account();
 			//account4.setAccount_num("0100000104");
-			account4.setAccount_name("User " + user_id + "'s account payable account");
+			account4.setAccount_name("User " + user_id + " ap acc");
 			account4.setChinese_name("" + user_name + "的预计还款账户");
 			account4.setAccount_type(AccountConstants.ACCOUNT_TYPE_USER_ACCOUNT_PAYABLE);
-			account4.setType_description("user payable account for repay the loan");
+			account4.setType_description("acc pay");
 			account4.setDescription("User " + user_name +"'s payable account for repay loan");
 			account4.setCreate_time(new Date());
 			account4.setUpdate_time(new Date());
 			account4.setUser_account(user_id);
 			//account4.getAccount_bal().setAccount_num(account_num);
-			account4.getAccount_bal().setAccount_name("User " + user_id + "'s account payable account");
+			account4.getAccount_bal().setAccount_name("User " + user_id + "ap");
 			account4.getAccount_bal().setCreate_time(new Date());
 			account4.getAccount_bal().setUpdate_time(new Date());
+			account4.getAccount_bal().setAccount(account4);
+			account4.setD_C('d');
 			accountingDAO.createAccount(account4);
 		
 			b = true;
 		} catch (AccountException e) {
 			e.printStackTrace();
 			logger.error(e);
-		}
+		} 
 
 		return b;
 	}
@@ -113,17 +128,24 @@ public class AccountingManager {
 	public boolean depositMoney(int user_id, BigDecimal amount){
 		boolean b = false;
 		Account account = null;
-		
+		int event_id;
+		Event event = new Event();
 		
 		try {
+			eventManager = EventManager.getInstance();
+			event.setBusiness_type(AccountConstants.BIZ_OPER_DEPOSIT_MONEY);
+			event.setCreate_date(new Date());
+			event.setUpdate_date(new Date());
+			event_id = eventManager.createEvent(event);
+			
 			//Get the deposit account:
 			account = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
 			
 			//and the platform account is 0:
 			//debit the platform account and credit the deposit account:
 			Document document = new Document();
-			document.setBusiness_event(AccountConstants.BIZ_OPER_DEPOSIT_MONEY);
-			document.setDescription("user " + user_id + " has deposit " + amount + "RMB to the platform, so his account will increase");
+			document.setBusiness_event(event_id);
+			document.setDescription("user " + user_id + " has deposit " + amount + "RMB.");
 			document.setCreate_time(new Date());
 			document.setUpdate_time(new Date());
 			
@@ -158,6 +180,10 @@ public class AccountingManager {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			logger.error(e1);
+		} catch (EventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e);
 		} finally {
 			
 		}
@@ -168,16 +194,23 @@ public class AccountingManager {
 	public boolean drawMoney (int user_id, BigDecimal amount) {
 		boolean b = false;
 		Account account = null;
+		Event event = new Event();
+		int event_id;
 		
 		//Get the deposit account:
 		try {
+			eventManager = EventManager.getInstance();
+			event.setBusiness_type(AccountConstants.BIZ_OPER_DRAW_MONEY);
+			event.setCreate_date(new Date());
+			event.setUpdate_date(new Date());
+			event_id = eventManager.createEvent(event);
 			account = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
 			
 			//and the platform account is 0:
 			//credit the platform account and debit the deposit account:
 			Document document = new Document();
-			document.setBusiness_event(AccountConstants.BIZ_OPER_DRAW_MONEY);
-			document.setDescription("user " + user_id + " has draw " + amount + "RMB from the platform, so his account will decrease");
+			document.setBusiness_event(event_id);
+			document.setDescription("user " + user_id + " has draw " + amount + "RMB.");
 			document.setCreate_time(new Date());
 			document.setUpdate_time(new Date());
 					
@@ -210,6 +243,10 @@ public class AccountingManager {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			logger.error(e1);
+		} catch (EventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e);
 		}
 				
 		return b;
@@ -219,17 +256,25 @@ public class AccountingManager {
 		boolean b = false;
 		Account accountD = null;
 		Account accountI = null;
+		Event event = new Event();
+		int event_id;
 		
 		//Get the deposit account:
 		try {
+			eventManager = EventManager.getInstance();
+			event.setBusiness_type(AccountConstants.BIZ_OPER_INVEST_MONEY);
+			event.setCreate_date(new Date());
+			event.setUpdate_date(new Date());
+			event_id = eventManager.createEvent(event);
+			
 			accountD = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
 			accountI = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_INVEST);
 			
 			
 			//credit the invest account and debit the deposit account:
 			Document document = new Document();
-			document.setBusiness_event(AccountConstants.BIZ_OPER_INVEST_MONEY);
-			document.setDescription("user " + user_id + " has invest " + amount + "RMB to a project, so his amout will transfer from deposit to invest");
+			document.setBusiness_event(event_id);
+			document.setDescription("user " + user_id + " has invest " + amount + "RMB.");
 			document.setCreate_time(new Date());
 			document.setUpdate_time(new Date());
 					
@@ -262,6 +307,10 @@ public class AccountingManager {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			logger.error(e1);
+		} catch (EventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return b;
@@ -271,16 +320,24 @@ public class AccountingManager {
 		boolean b = false;
 		Account accountD = null;
 		Account accountI = null;
+		Event event = new Event();
+		int event_id;
 		
 		//Get the deposit&invest account:
 		try {
+			eventManager = EventManager.getInstance();
+			event.setBusiness_type(AccountConstants.BIZ_OPER_RAISE_FAILED_RETURN);
+			event.setCreate_date(new Date());
+			event.setUpdate_date(new Date());
+			event_id = eventManager.createEvent(event);
+			
 			accountD = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
 			accountI = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_INVEST);
 			
 			//debit the invest account and credit the deposit account:
 			Document document = new Document();
-			document.setBusiness_event(AccountConstants.BIZ_OPER_RAISE_FAILED_RETURN);
-			document.setDescription("the project failed to raise money, so return moeny back to " + user_id + ":" + amount + "RMB from invest account to deposit account");
+			document.setBusiness_event(event_id);
+			document.setDescription("return " + user_id + ":" + amount + "RMB.");
 			document.setCreate_time(new Date());
 			document.setUpdate_time(new Date());
 					
@@ -312,6 +369,11 @@ public class AccountingManager {
 		} catch (AccountException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			logger.error(e1);
+		} catch (EventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return b;
@@ -321,16 +383,23 @@ public class AccountingManager {
 		boolean b = false;
 		Account accountL = null;
 		Account accountP = null;
+		Event event = new Event();
+		int event_id;
 		
 		//Get the deposit&invest account:
 		try {
+			eventManager = EventManager.getInstance();
+			event.setBusiness_type(AccountConstants.BIZ_OPER_PAY_TO_LENDER_ACCOUNT);
+			event.setCreate_date(new Date());
+			event.setUpdate_date(new Date());
+			event_id = eventManager.createEvent(event);
 			accountL = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_LOAN);
 			accountP = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
 			
 			//debit the user loan account and credit the platform account:
 			Document document = new Document();
-			document.setBusiness_event(AccountConstants.BIZ_OPER_PAY_TO_LENDER_ACCOUNT);
-			document.setDescription("the project successfully raised money, so transfer money to " + user_id + ":" + amount + "RMB from platform");
+			document.setBusiness_event(event_id);
+			document.setDescription("transfer to " + user_id + ":" + amount + "RMB");
 			document.setCreate_time(new Date());
 			document.setUpdate_time(new Date());
 					
@@ -362,6 +431,11 @@ public class AccountingManager {
 		} catch (AccountException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			logger.error(e1);
+		} catch (EventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return b;
@@ -372,16 +446,23 @@ public class AccountingManager {
 		Account accountL = null;
 		Account accountP = null;
 		Account accountI = null;
+		Event event = new Event();
+		int event_id;
 		
 		//Get the deposit&invest account:
 		try {
+			eventManager = EventManager.getInstance();
+			event.setBusiness_type(AccountConstants.BIZ_OPER_REPAY_TO_PLATFORM);
+			event.setCreate_date(new Date());
+			event.setUpdate_date(new Date());
+			event_id = eventManager.createEvent(event);
 			accountL = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_LOAN);
 			accountP = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
 			
 			//debit the user loan account and credit the platform account:
 			Document document = new Document();
-			document.setBusiness_event(AccountConstants.BIZ_OPER_REPAY_TO_PLATFORM);
-			document.setDescription("the user repay back loan to platform");
+			document.setBusiness_event(event_id);
+			document.setDescription("the user repay back.");
 			document.setCreate_time(new Date());
 			document.setUpdate_time(new Date());
 					
@@ -422,6 +503,11 @@ public class AccountingManager {
 		} catch (AccountException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			logger.error(e1);
+		} catch (EventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return b;
@@ -431,16 +517,23 @@ public class AccountingManager {
 		boolean b = false;
 		Account accountD = null;
 		Account accountP = null;
+		Event event = new Event();
+		int event_id;
 			
 		//Get the deposit&invest account:
 		try {
+			eventManager = EventManager.getInstance();
+			event.setBusiness_type(AccountConstants.BIZ_OPER_PAY_BACK_TO_USER);
+			event.setCreate_date(new Date());
+			event.setUpdate_date(new Date());
+			event_id = eventManager.createEvent(event);
 			accountD = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_TYPE_USER_DEPOSIT);
 			accountP = accountingDAO.getAccount(user_id, AccountConstants.ACCOUNT_PLATFORM_ACCOUNT);
 			
 			//debit the user loan account and credit the platform account:
 			Document document = new Document();
-			document.setBusiness_event(AccountConstants.BIZ_OPER_PAY_BACK_TO_USER);
-			document.setDescription("platform send the money to user account");
+			document.setBusiness_event(event_id);
+			document.setDescription("send money to user");
 			document.setCreate_time(new Date());
 			document.setUpdate_time(new Date());
 					
@@ -490,8 +583,17 @@ public class AccountingManager {
 		} catch (AccountException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			logger.error(e1);
+		} catch (EventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return b;
+	}
+	
+	public Account getAccountBalance(int user_id, int acc_type) throws AccountException{
+		return accountingDAO.getAccount(user_id, acc_type);
 	}
 }

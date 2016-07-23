@@ -20,6 +20,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import com.philip.fin.basic.HibernateUtil;
 import com.philip.fin.test.LoginAction;
 
 public class AccountingDAO {
@@ -51,10 +52,10 @@ public class AccountingDAO {
 	}*/
 	
 	public AccountingDAO() {
-		logger.debug("Construct Accounting DAO");
-		logger.debug("set configuration..");
-		if(configuration == null)configuration=new Configuration(); 
-		configuration.configure();
+		//logger.debug("Construct Accounting DAO");
+		//logger.debug("set configuration..");
+		//if(configuration == null)configuration=new Configuration(); 
+		//configuration.configure();
 		
 		//logger.debug("open the session..");
 		//if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
@@ -72,15 +73,10 @@ public class AccountingDAO {
 		}
 		
 		logger.debug("open the session..");
-		//if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-		if(sf==null)
-		{
-			sf = configuration.buildSessionFactory();
-			ss = sf.openSession();
-		} else {
-			ss = sf.openSession();
-		}	
-				
+		//sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+		sf = configuration.buildSessionFactory();
+		ss = sf.openSession();
+		
 		logger.debug("successly setup the connection");
 		
 		b = true;
@@ -92,7 +88,7 @@ public class AccountingDAO {
 		boolean b = false;
 		
 		if(ss!=null&&ss.isConnected())ss.close();
-		if(sf!=null&&ss.isConnected())sf.close();
+		if(sf!=null)sf.close();
 		
 		logger.debug("the session successfully closed");
 		
@@ -106,16 +102,20 @@ public class AccountingDAO {
 		int account_id = 0;
 		String acc_num = null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try{
 			ss.beginTransaction();
+			account.setAccount_num("");
+			account.getAccount_bal().setAccount_num("");
 			ss.save(account);
 			account_id = account.getAccount_id();
 			account.getAccount_bal().setId(account_id);
 			acc_num = String.format("%03d", account.getAccount_type()) + String.format("%07d", account_id);
 			account.setAccount_num(acc_num);
 			account.getAccount_bal().setAccount_num(acc_num);
+			account.getAccount_bal().setAccount_bal(new BigDecimal(0));
 			ss.save(account);
 			ss.getTransaction().commit();
 	
@@ -127,7 +127,8 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {			
-			this.clearup();
+			ss.close();
+			//util.getSessionFactory().close();
 		}
 		
 		return account_id;
@@ -138,7 +139,8 @@ public class AccountingDAO {
 		boolean b=false;
 		Account account = new Account();
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try{
 			ss.beginTransaction();
@@ -153,7 +155,8 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
+			//util.getSessionFactory().close();
 		}
 		
 		
@@ -165,7 +168,8 @@ public class AccountingDAO {
 		Account account = new Account();
 		List result;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -186,7 +190,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}		
 		
 		return account;
@@ -196,7 +200,8 @@ public class AccountingDAO {
 		logger.debug("delete account " + account.getAccount_name() + " from database;");
 		boolean b = false;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try{
 			ss.beginTransaction();
@@ -211,7 +216,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 	
 		return b;
@@ -222,7 +227,8 @@ public class AccountingDAO {
 		//boolean b = false;
 		int doc_id = 0;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -248,7 +254,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return doc_id;
@@ -259,7 +265,8 @@ public class AccountingDAO {
 		boolean b=false;
 		Document document = new Document();
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -274,7 +281,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return document;
@@ -284,7 +291,8 @@ public class AccountingDAO {
 		logger.debug("delete document " + document.getDescription() + " from database;");
 		boolean b = false;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -299,7 +307,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return b;
@@ -307,9 +315,10 @@ public class AccountingDAO {
 	
 	public boolean updateAccounts(Document document) throws AccountException{
 		boolean b = false;
-		BigDecimal bal = new BigDecimal(0);
 		
-		this.setup();
+		
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -321,7 +330,8 @@ public class AccountingDAO {
 				//1、find the account:
 				account = (Account)ss.get(Account.class, item.getAccount_id());
 				//2、plus or minus from account:
-				//3、if <0, throw Exception:
+				//3、if <0, throw Exception:type name = new type();
+				BigDecimal bal = new BigDecimal(0);
 				bal = bal.add(account.getAccount_bal().getAccount_bal());
 				if(account.getD_C()=='d'){
 					if(item.getCredit_debit()=='d'){
@@ -354,7 +364,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 
 		return b;
@@ -365,7 +375,8 @@ public class AccountingDAO {
 		List<AccountBalance[]> result=null;
 		Iterator i = null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -391,7 +402,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 	
 		return b;
@@ -403,7 +414,8 @@ public class AccountingDAO {
 		BigDecimal credit = new BigDecimal(0);
 		List<Object[]> result=null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -433,7 +445,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 	
 		return b;
@@ -445,7 +457,8 @@ public class AccountingDAO {
 		BigDecimal credit = new BigDecimal(0);
 		List<Object[]> result=null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -473,7 +486,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 
 		return b;
@@ -485,7 +498,8 @@ public class AccountingDAO {
 		BigDecimal credit = new BigDecimal(0);
 		List<Object[]> result=null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -514,7 +528,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 
 		return b;
@@ -530,7 +544,8 @@ public class AccountingDAO {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
 		String yestoday = "" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH)+1) + "-" +(cal.get(Calendar.DAY_OF_MONTH));
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -588,7 +603,7 @@ public class AccountingDAO {
 			logger.error(e);
 			throw new AccountException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 
 		return check;

@@ -8,6 +8,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import com.philip.fin.basic.HibernateUtil;
+
 public class UserDAO {
 	
 	private static final Logger logger = Logger.getLogger(UserDAO.class);
@@ -19,14 +21,9 @@ public class UserDAO {
 	
 	public UserDAO() {
 		logger.debug("Construct User DAO");
-		logger.debug("set configuration..");
-		if(configuration == null)configuration=new Configuration(); 
-		configuration.configure();
-		
-		logger.debug("open the session..");
-		//if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-		if(sf == null){sf = configuration.buildSessionFactory();ss = sf.openSession();}
-		else ss = sf.openSession();
+		//logger.debug("set configuration..");
+		//if(configuration == null)configuration=new Configuration(); 
+		//configuration.configure();
 	}
 	
 	public boolean setup() {
@@ -41,8 +38,13 @@ public class UserDAO {
 		
 		logger.debug("open the session..");
 		//if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-		sf = configuration.buildSessionFactory();
-		ss = sf.openSession();
+		if(sf==null){
+			sf = configuration.buildSessionFactory();
+			ss = sf.openSession();
+		} else {
+			if (!ss.isConnected()) ss = sf.openSession();
+		}
+		
 				
 		logger.debug("successly setup the connection");
 		b = true;
@@ -54,7 +56,7 @@ public class UserDAO {
 		boolean b = false;
 		
 		if(ss!=null&&ss.isConnected())ss.close();
-		if(sf!=null&&ss.isConnected())sf.close();
+		if(sf!=null)sf.close();
 		
 		logger.debug("the session successfully closed");
 		b = true;
@@ -65,7 +67,8 @@ public class UserDAO {
 		logger.debug("start to create user");
 		int user_id;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -76,6 +79,9 @@ public class UserDAO {
 			e.printStackTrace();
 			logger.error(e);
 			throw new UserException();
+		} finally {
+			ss.close();
+			//util.getSessionFactory().close();
 		}
 
 		return user_id;
@@ -85,7 +91,8 @@ public class UserDAO {
 		logger.debug("try to get user");
 		User user = null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -95,6 +102,9 @@ public class UserDAO {
 			e.printStackTrace();
 			logger.error(e);
 			throw new UserException();
+		} finally {
+			ss.close();
+			//util.getSessionFactory().close();
 		}
 			
 		return user;
@@ -104,7 +114,8 @@ public class UserDAO {
 		logger.debug("try to delete user");
 		boolean b = false;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try{
 			ss.beginTransaction();
@@ -116,6 +127,9 @@ public class UserDAO {
 			e.printStackTrace();
 			logger.error(e);
 			throw new UserException(e);
+		} finally {
+			ss.close();
+			//util.getSessionFactory().close();
 		}
 
 		return b;

@@ -12,6 +12,15 @@ public class AccountBalance implements Serializable{
 	private Date create_time;
 	private Date update_time;
 	private Account account;
+	private String formattedAccount_bal;
+	
+	public String getFormattedAccount_bal(){
+		return account_bal.toString();
+	}
+	
+	public void setFormattedAccount_bal(String amtString){
+		account_bal = new BigDecimal(amtString);
+	}
 	
 	public Account getAccount() {
 		return account;

@@ -22,7 +22,8 @@
 		<mapping resource="User.hbm.xml"/>
 		<mapping resource="Accounting.hbm.xml"/>
 		<mapping resource="Loan.hbm.xml"/>
-		<mapping resource="Invest.hbm.xml"/>		
+		<mapping resource="Invest.hbm.xml"/>
+		<mapping resource="Event.hbm.xml"/>		
 	</session-factory>
 	
 </hibernate-configuration>

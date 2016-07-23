@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+ <hibernate-mapping>
+ 	<class name="com.philip.fin.event.Event" table="business_event" catalog="fin_philip">
+ 		<id name="id"  type="java.lang.Integer">
+ 			<column name="id" />
+ 			<generator class="increment" />
+ 		</id>
+ 		<property name="business_type" type="java.lang.Integer">
+ 			<column name="business_type" />
+ 		</property>
+ 		<property name="amount_total" type="java.math.BigDecimal">
+ 			<column name="amount_total" />
+ 		</property>
+ 		<property name="create_date" type="java.util.Date">
+ 			<column name="create_date" />
+ 		</property>
+ 		<property name="update_date" type="java.util.Date">
+ 			<column name="update_date" />
+ 		</property>
+ 	</class>
+ </hibernate-mapping>

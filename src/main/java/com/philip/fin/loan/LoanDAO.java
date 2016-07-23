@@ -18,6 +18,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 import com.philip.fin.accounting.AccountingDAO;
+import com.philip.fin.basic.HibernateUtil;
 
 public class LoanDAO {
 	private static final Logger logger = Logger.getLogger(LoanDAO.class);
@@ -29,9 +30,9 @@ public class LoanDAO {
 	
 	public LoanDAO() {
 		logger.debug("Construct Loan DAO");
-		logger.debug("set configuration..");
-		if(configuration == null)configuration=new Configuration(); 
-		configuration.configure();
+		//logger.debug("set configuration..");
+		//if(configuration == null)configuration=new Configuration(); 
+		//configuration.configure();
 	}
 	
 	public boolean setup() {
@@ -46,13 +47,12 @@ public class LoanDAO {
 		
 		logger.debug("open the session..");
 		//if(sr == null)sr =  new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-		if(sf==null)
-		{
+		if(sf==null){
 			sf = configuration.buildSessionFactory();
 			ss = sf.openSession();
 		} else {
-			ss = sf.openSession();
-		}	
+			if (!ss.isConnected()) ss = sf.openSession();
+		}
 				
 		logger.debug("successly setup the connection");
 		
@@ -65,7 +65,7 @@ public class LoanDAO {
 		boolean b = false;
 		
 		if(ss!=null&&ss.isConnected())ss.close();
-		if(sf!=null&&ss.isConnected())sf.close();
+		if(sf!=null)sf.close();
 		
 		logger.debug("the session successfully closed");
 		
@@ -79,7 +79,8 @@ public class LoanDAO {
 		InputStream in = null;
 		Blob blob = null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -146,7 +147,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return loan_id;
@@ -158,7 +159,8 @@ public class LoanDAO {
 		InputStream in = null;
 		Blob blob = null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -241,7 +243,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return loan_id;
@@ -251,7 +253,8 @@ public class LoanDAO {
 		logger.debug("start to get loan by id");
 		Loan_Apply_Info loan = null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -263,7 +266,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return loan;
@@ -273,7 +276,8 @@ public class LoanDAO {
 		logger.debug("to get Loan Applied by user id");
 		ArrayList<Loan_Apply_Info> list = new ArrayList();
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -287,7 +291,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return list;
@@ -297,7 +301,8 @@ public class LoanDAO {
 		logger.debug("to delete the loan's information");
 		boolean b = false;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -311,7 +316,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return b;
@@ -322,6 +327,9 @@ public class LoanDAO {
 		int loan_id = 0;
 		InputStream in = null;
 		Blob blob = null;
+		
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -401,7 +409,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return b;
@@ -409,6 +417,9 @@ public class LoanDAO {
 	
 	public boolean updateLoanInfo(Loan_Info loan) throws LoanException{
 		boolean b = false;
+		
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -420,6 +431,8 @@ public class LoanDAO {
 			e.printStackTrace();
 			logger.error(e);
 			throw new LoanException(e);
+		} finally {
+			ss.close();
 		}
 		
 		return b;
@@ -429,6 +442,9 @@ public class LoanDAO {
 		boolean b = false;
 		Blob blob = null;
 		InputStream in = null;
+		
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			//solve the blob:
@@ -494,7 +510,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return b;
@@ -505,7 +521,8 @@ public class LoanDAO {
 		boolean b = false;
 		String hql = null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -525,7 +542,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 
 		return b;
@@ -535,6 +552,9 @@ public class LoanDAO {
 		logger.debug("to update the loan 's company");
 		boolean b = false;
 		String hql = null;
+		
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -554,7 +574,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 
 		return b;
@@ -564,7 +584,8 @@ public class LoanDAO {
 		logger.debug("to get Loan Applied by status");
 		ArrayList<Loan_Info> list = new ArrayList();
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -578,7 +599,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return list;
@@ -588,7 +609,8 @@ public class LoanDAO {
 		logger.debug("to get loan information");
 		Loan_Info loan = null;
 		
-		this.setup();
+		HibernateUtil util = HibernateUtil.getInstance();
+		ss = util.getSessionFactory().openSession();
 		
 		try {
 			ss.beginTransaction();
@@ -601,7 +623,7 @@ public class LoanDAO {
 			logger.error(e);
 			throw new LoanException(e);
 		} finally {
-			this.clearup();
+			ss.close();
 		}
 		
 		return loan;

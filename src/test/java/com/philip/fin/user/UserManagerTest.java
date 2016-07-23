@@ -11,7 +11,7 @@ public class UserManagerTest extends TestCase {
 	private UserManager manager = null;
 	
 	protected void setUp() throws Exception {
-		manager = new UserManager();
+		manager = UserManager.getInstance();
 	}
 	
 	protected void tearDown() throws Exception {
