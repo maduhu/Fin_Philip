@@ -16,5 +16,17 @@
 	<action name="draw" class="com.philip.fin.action.DrawAction">
 		<result>/account.jsp</result>
 	</action>
+	<action name="loan_show" class="com.philip.fin.action.ShowLoanApplyAction">
+		<result>/loan_company.jsp</result>
+	</action>
+	<action name="loan_save" class="com.philip.fin.action.LoanSaveAction">
+		<result>/loan_company.jsp</result>
+	</action>
+	<action name="loan_next" class="com.philip.fin.action.LoanNextAction">
+		<result>/loan_basic.jsp</result>
+	</action>
+	<action name="loan_credit" class="com.philip.fin.action.LoanCreditAction">
+		<result>/loan_credit.jsp</result>
+	</action>
 	</package>
 </struts>

@@ -22,7 +22,7 @@ public class LoanManager {
 	
 	private static final Logger logger = Logger.getLogger(LoanManager.class);
 	
-	public LoanManager getInstance(){
+	public static LoanManager getInstance(){
 		if( manager == null ) manager = new LoanManager();
 		return manager;
 	}
@@ -48,6 +48,22 @@ public class LoanManager {
 			b = true;
 		} catch (LoanException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e);
+		}
+		
+		return b;
+	}
+	
+	public boolean createLoanWithCompany(Loan_Apply_Info loan, Company_Info company) {
+		boolean b = false;
+		
+		try {
+			loan.getLoan_info().setVerify_status(LoanConstants.LOAN_IS_IN_FILING);
+			
+			loanDAO.createLoanWithCompany(loan, company);
+			b = true;
+		} catch (LoanException e) {
 			e.printStackTrace();
 			logger.error(e);
 		}
@@ -184,5 +200,24 @@ public class LoanManager {
 		}
 	}
 	
+	public Loan_Apply_Info getLoanApplyDraft(int user_id) throws LoanException{
+		ArrayList<Loan_Apply_Info> al = null;
+		Loan_Apply_Info loan_apply = null;
+		al = loanDAO.getLoanApplyListByUser(user_id);
+		
+		Iterator i = al.iterator();
+		while (i.hasNext()) {
+			loan_apply = (Loan_Apply_Info) i.next();
+			if(loan_apply.getLoan_info().getVerify_status() == LoanConstants.LOAN_IS_IN_FILING){
+				break;
+			}
+			loan_apply = null;
+		}
+		return loan_apply;
+	}
+	
+	public Company_Info getCompany(int company_id) throws LoanException{
+		return loanDAO.getCompany(company_id);
+	}
 	
 }
